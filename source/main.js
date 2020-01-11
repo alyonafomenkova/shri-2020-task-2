@@ -124,6 +124,11 @@ const jsonString = `{
                                                                 {
                                                                     "block": "text",
                                                                     "elem": "word",
+                                                                    "mods": {
+                                                                        "view": "primary",
+                                                                        "size": "xxxxxxxl",
+                                                                        "align": "center"
+                                                                    },
                                                                     "elemMods": {
                                                                         "width": "s"
                                                                     }
