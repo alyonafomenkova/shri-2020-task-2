@@ -1,0 +1,29 @@
+{
+  "name": "shri-2020-task-2",
+  "version": "1.0.0",
+  "description": "В этом репозитории находятся материалы тестового задания «Напишите линтер» для [16-й Школы разработки интерфейсов](https://yandex.ru/promo/academy/shri) (зима 2020, Москва).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "start": "webpack-dev-server --mode development --hot --colors --progress"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yndx-shri-reviewer/shri-2020-task-2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yndx-shri-reviewer/shri-2020-task-2/issues"
+  },
+  "homepage": "https://github.com/yndx-shri-reviewer/shri-2020-task-2#readme",
+  "devDependencies": {
+    "json-to-ast": "^2.1.0",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1"
+  },
+  "dependencies": {}
+}
