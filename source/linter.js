@@ -4,6 +4,7 @@ const ERROR_TEXT_SIZES_SHOULD_BE_EQUAL = "WARNING.TEXT_SIZES_SHOULD_BE_EQUAL";
 const ERROR_TEXT_NO_SIZE_VALUE = "WARNING.TEXT_NO_SIZE_VALUE";
 const INVALID_BUTTON_SIZE = "WARNING.INVALID_BUTTON_SIZE";
 const INVALID_PLACEHOLDER_SIZE = "WARNING.INVALID_PLACEHOLDER_SIZE";
+const INVALID_BUTTON_POSITION = "WARNING.INVALID_BUTTON_POSITION";
 
 const isObjectNode = (node) => node.type === "Object";
 const isPropertyNode = (node) => node.type === "Property";
@@ -37,44 +38,6 @@ function contains(array, element) { // TODO: переименовать мето
 }
 //
 
-class PlaceholderSizeForWarningRule {
-
-  constructor() {
-    this.canStart = true;
-    this.inProgress = false;
-    this.location = null;
-  }
-
-  process(parent, node) {
-    if (this.canStart) {
-      const key = node.key.value;
-      const value = node.value.value;
-
-      if (key === "block" && value === "warning") {
-        console.log("[START] Checking placeholder size rule");
-        this.canStart = false;
-        this.inProgress = true;
-        traverse(parent);
-        this.inProgress = false;
-        console.log("[FINISH] Checking placeholder size rule");
-      }
-    } else if (this.inProgress && node.value.value === "placeholder") {
-      this.location = parent.loc;
-      const mods = parent.children.find((e) => { return e.key.value === "mods" });
-
-      if (mods) {
-        const size = mods.value.children.find((e) => { return e.key.value === "size" });
-
-        if (!["s", "m", "l"].includes(size.value.value)) {
-          pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", this.location);
-        }
-      } else {
-        pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", this.location);
-      }
-    }
-  }
-}
-
 class WarningCheck {
 
   constructor() {
@@ -82,6 +45,7 @@ class WarningCheck {
     this.inProgress = false;
     this.refSize = null;
     this.location = null;
+    this.buttonEnabled = false;
     this.sizes = ['xxxs', 'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xxxxl', 'xxxxxl'];
   }
 
@@ -122,7 +86,10 @@ class WarningCheck {
     if (this.inProgress && node.value.value === "button") {
       this.location = parent.loc;
       const mods = parent.children.find((e) => { return e.key.value === "mods" });
-      if (mods) {
+      //
+      if (!this.buttonEnabled) {
+        pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", this.location);/////
+      } else {//start else
         const button = mods.value.children.find((e) => { return e.key.value === "size" });
         const buttonSize = button.value.value;
         if (!contains(this.sizes, buttonSize)) {
@@ -133,17 +100,27 @@ class WarningCheck {
             console.log(`неверный размер! Должен быть refButtonSize: ${this.refSize}`);
             pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location);
           }
-        }// end else
+          }// end else
+      }//end else
+      }
+    // placeholder rule
+    if (this.inProgress && node.value.value === "placeholder") {
+      this.location = parent.loc;
+      this.buttonEnabled = true;
+      const mods = parent.children.find((e) => { return e.key.value === "mods" });
+      if (mods) {
+        const size = mods.value.children.find((e) => { return e.key.value === "size" });
+        if (!["s", "m", "l"].includes(size.value.value)) {
+          pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", this.location);
+        }
+      } else {
+        pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", this.location);
       }
     }
-    //
   }
 }
 
-
-// const placeholderSizeForWarningRule = new PlaceholderSizeForWarningRule();
 const warningCheck = new WarningCheck();
-
 
 function traverse(node) {
   const startLine = node.loc.start.line;
@@ -158,7 +135,6 @@ function traverse(node) {
     const type = node.value.type;
 
     if (isLiteralPropertyType(type)) {
-      //placeholderSizeForWarningRule.process(parent, node);
       warningCheck.process(parent, node);
 
     } else if (isArrayPropertyType(type)) {

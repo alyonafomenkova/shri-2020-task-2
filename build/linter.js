@@ -2895,6 +2895,7 @@ const ERROR_TEXT_SIZES_SHOULD_BE_EQUAL = "WARNING.TEXT_SIZES_SHOULD_BE_EQUAL";
 const ERROR_TEXT_NO_SIZE_VALUE = "WARNING.TEXT_NO_SIZE_VALUE";
 const INVALID_BUTTON_SIZE = "WARNING.INVALID_BUTTON_SIZE";
 const INVALID_PLACEHOLDER_SIZE = "WARNING.INVALID_PLACEHOLDER_SIZE";
+const INVALID_BUTTON_POSITION = "WARNING.INVALID_BUTTON_POSITION";
 
 const isObjectNode = (node) => node.type === "Object";
 const isPropertyNode = (node) => node.type === "Property";
@@ -2917,14 +2918,26 @@ function pushError(code, message, location) {
   };
   errors.push(item);
 }
+// вынести в другой модуль
+function contains(array, element) { // TODO: переименовать метод
+  for (let i = 0; i < array.length - 1; i++) {
+    if (array[i] === element) {
+      return true;
+    }
+  }
+  return false;
+}
+//
 
-class TextSizeForWarningRule {
+class WarningCheck {
 
   constructor() {
     this.canStart = true;
     this.inProgress = false;
     this.refSize = null;
     this.location = null;
+    this.buttonEnabled = false;
+    this.sizes = ['xxxs', 'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xxxxl', 'xxxxxl'];
   }
 
   process(parent, node) {
@@ -2934,12 +2947,12 @@ class TextSizeForWarningRule {
 
       if (key === "block" && value === "warning") {
         this.location = parent.loc;
-        console.log("[START] Checking text size rule");
+        console.log("[START] Checking warning");
         this.canStart = false;
         this.inProgress = true;
         traverse(parent);
         this.inProgress = false;
-        console.log("[FINISH] Checking text size rule");
+        console.log("[FINISH] Checking warning");
       }
     } else if (this.inProgress && node.value.value === "text") {
       const mods = parent.children.find((e) => { return e.key.value === "mods" });
@@ -2960,86 +2973,34 @@ class TextSizeForWarningRule {
         }
       }
     }
-  }
-}
-
-class ButtonSizeForWarningRule {
-
-  constructor() {
-    this.canStart = true;
-    this.inProgress = false;
-    this.refSize = null;
-    this.buttons = [];
-    this.sizes = ['xxxs', 'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xxxxl'];
-  }
-
-  process(parent, node) {
-    if (this.canStart) {
-      const key = node.key.value;
-      const value = node.value.value;
-
-      if (key === "block" && value === "warning") {
-        console.log("[START] Checking button size rule");
-        this.canStart = false;
-        this.inProgress = true;
-        traverse(parent);
-        this.inProgress = false;
-        console.log("[FINISH] Checking button size rule");
-      }
-    } else if (this.inProgress && node.value.value === "text") {
-      const mods = parent.children.find((e) => { return e.key.value === "mods" });
-
-      if (mods) {
-        const size = mods.value.children.find((e) => { return e.key.value === "size" });
-
-        if (size) {
-          const currSize = size.value.value;
-
-          if (this.refSize === null) {
-            this.refSize = currSize;
-            if (this.inProgress && node.value.value === "button") {
-              console.log(`find button`);
-            } else { console.log(`doesn't find button`); }
-          } else {
-            pushError(ERROR_TEXT_NO_SIZE_VALUE, "Text block with 'mods' has no 'size' block", parent.loc)
-          }
-          //   if (currSize !== null && this.refSize !== currSize) {
-          //   pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more", parent.loc)
-          // }
-        }
-      }
-    }
-  }
-}
-
-class PlaceholderSizeForWarningRule {
-
-  constructor() {
-    this.canStart = true;
-    this.inProgress = false;
-    this.location = null;
-  }
-
-  process(parent, node) {
-    if (this.canStart) {
-      const key = node.key.value;
-      const value = node.value.value;
-
-      if (key === "block" && value === "warning") {
-        console.log("[START] Checking placeholder size rule");
-        this.canStart = false;
-        this.inProgress = true;
-        traverse(parent);
-        this.inProgress = false;
-        console.log("[FINISH] Checking placeholder size rule");
-      }
-    } else if (this.inProgress && node.value.value === "placeholder") {
+    // button size rule
+    if (this.inProgress && node.value.value === "button") {
       this.location = parent.loc;
       const mods = parent.children.find((e) => { return e.key.value === "mods" });
-
+      //
+      if (!this.buttonEnabled) {
+        pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", this.location);/////
+      } else {//start else
+        const button = mods.value.children.find((e) => { return e.key.value === "size" });
+        const buttonSize = button.value.value;
+        if (!contains(this.sizes, buttonSize)) {
+          pushError(INVALID_BUTTON_SIZE, `Button cannot be this size.`, this.location);
+        } else {
+          const refButtonSize = this.sizes[this.sizes.findIndex((size) => size === this.refSize) + 1];
+          if (buttonSize !== refButtonSize) {
+            console.log(`неверный размер! Должен быть refButtonSize: ${this.refSize}`);
+            pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location);
+          }
+          }// end else
+      }//end else
+      }
+    // placeholder rule
+    if (this.inProgress && node.value.value === "placeholder") {
+      this.location = parent.loc;
+      this.buttonEnabled = true;
+      const mods = parent.children.find((e) => { return e.key.value === "mods" });
       if (mods) {
         const size = mods.value.children.find((e) => { return e.key.value === "size" });
-
         if (!["s", "m", "l"].includes(size.value.value)) {
           pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", this.location);
         }
@@ -3050,10 +3011,7 @@ class PlaceholderSizeForWarningRule {
   }
 }
 
-const textSizeForWarningRule = new TextSizeForWarningRule();
-const buttonSizeForWarningRule = new ButtonSizeForWarningRule();
-const placeholderSizeForWarningRule = new PlaceholderSizeForWarningRule();
-
+const warningCheck = new WarningCheck();
 
 function traverse(node) {
   const startLine = node.loc.start.line;
@@ -3068,9 +3026,7 @@ function traverse(node) {
     const type = node.value.type;
 
     if (isLiteralPropertyType(type)) {
-      textSizeForWarningRule.process(parent, node);
-      //buttonSizeForWarningRule.process(parent, node);
-      placeholderSizeForWarningRule.process(parent, node)
+      warningCheck.process(parent, node);
 
     } else if (isArrayPropertyType(type)) {
       const children = node.value.children;
@@ -5702,13 +5658,14 @@ const jsonString = `{
 //lint(jsonString);
 
 // lint(`{
-// //     "block": "warning",
-// //     "content": [
-// //         { "block": "text", "mods": { "": "l" } },
-// //         { "block": "text", "mods": { "": "l" } },
-// //         { "block": "button", "mods": { "size": "xl" } }
-// //     ]
-// // }`);
+//     "block": "warning",
+//     "content": [
+//       { "block": "text", "mods": { "size": "l" } },
+//       { "block": "text", "mods": { "size": "l" } },
+//       { "block": "placeholder", "mods": { "size": "s" } },
+//       { "block": "button", "mods": { "size": "xl" } }
+// ]
+// }`);
 
 /***/ })
 

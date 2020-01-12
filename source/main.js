@@ -2587,10 +2587,11 @@ const jsonString = `{
 //lint(jsonString);
 
 // lint(`{
-// //     "block": "warning",
-// //     "content": [
-// //         { "block": "text", "mods": { "": "l" } },
-// //         { "block": "text", "mods": { "": "l" } },
-// //         { "block": "button", "mods": { "size": "xl" } }
-// //     ]
-// // }`);
+//     "block": "warning",
+//     "content": [
+//       { "block": "text", "mods": { "size": "l" } },
+//       { "block": "text", "mods": { "size": "l" } },
+//       { "block": "placeholder", "mods": { "size": "s" } },
+//       { "block": "button", "mods": { "size": "xl" } }
+// ]
+// }`);
