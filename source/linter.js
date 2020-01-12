@@ -160,7 +160,7 @@ class PlaceholderSizeForWarningRule {
 }
 
 const textSizeForWarningRule = new TextSizeForWarningRule();
-//const buttonSizeForWarningRule = new ButtonSizeForWarningRule();
+const buttonSizeForWarningRule = new ButtonSizeForWarningRule();
 const placeholderSizeForWarningRule = new PlaceholderSizeForWarningRule();
 
 

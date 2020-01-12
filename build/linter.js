@@ -3041,7 +3041,6 @@ class PlaceholderSizeForWarningRule {
         const size = mods.value.children.find((e) => { return e.key.value === "size" });
 
         if (!["s", "m", "l"].includes(size.value.value)) {
-          //pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", parent.loc);
           pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", this.location);
         }
       } else {
@@ -3052,7 +3051,7 @@ class PlaceholderSizeForWarningRule {
 }
 
 const textSizeForWarningRule = new TextSizeForWarningRule();
-//const buttonSizeForWarningRule = new ButtonSizeForWarningRule();
+const buttonSizeForWarningRule = new ButtonSizeForWarningRule();
 const placeholderSizeForWarningRule = new PlaceholderSizeForWarningRule();
 
 
@@ -5700,28 +5699,16 @@ const jsonString = `{
         }
     ]
 }`;
-Object(_linter_js__WEBPACK_IMPORTED_MODULE_0__["lint"])(`{
-    "block": "warning",
-    "content": [
-        {
-            "block": "placeholder",
-            "mods": { "size": "lk" }
-        },
-        {
-            "elem": "content",
-            "content": [
-                {
-                    "block": "text",
-                    "mods": { "size": "m" }
-                },
-                {
-                    "block": "text",
-                    "mods": { "size": "l" }
-                }
-            ]
-        }
-    ]
-}`);
+//lint(jsonString);
+
+// lint(`{
+// //     "block": "warning",
+// //     "content": [
+// //         { "block": "text", "mods": { "": "l" } },
+// //         { "block": "text", "mods": { "": "l" } },
+// //         { "block": "button", "mods": { "size": "xl" } }
+// //     ]
+// // }`);
 
 /***/ })
 

@@ -2584,25 +2584,13 @@ const jsonString = `{
         }
     ]
 }`;
-lint(`{
-    "block": "warning",
-    "content": [
-        {
-            "block": "placeholder",
-            "mods": { "size": "lk" }
-        },
-        {
-            "elem": "content",
-            "content": [
-                {
-                    "block": "text",
-                    "mods": { "size": "m" }
-                },
-                {
-                    "block": "text",
-                    "mods": { "size": "l" }
-                }
-            ]
-        }
-    ]
-}`);
+//lint(jsonString);
+
+// lint(`{
+// //     "block": "warning",
+// //     "content": [
+// //         { "block": "text", "mods": { "": "l" } },
+// //         { "block": "text", "mods": { "": "l" } },
+// //         { "block": "button", "mods": { "size": "xl" } }
+// //     ]
+// // }`);
