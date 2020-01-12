@@ -2916,7 +2916,6 @@ function pushError(code, message, location) {
     }
   };
   errors.push(item);
-  console.log('errors: ', errors);
 }
 
 class TextSizeForWarningRule {
@@ -2925,6 +2924,7 @@ class TextSizeForWarningRule {
     this.canStart = true;
     this.inProgress = false;
     this.refSize = null;
+    this.location = null;
   }
 
   process(parent, node) {
@@ -2933,6 +2933,7 @@ class TextSizeForWarningRule {
       const value = node.value.value;
 
       if (key === "block" && value === "warning") {
+        this.location = parent.loc;
         console.log("[START] Checking text size rule");
         this.canStart = false;
         this.inProgress = true;
@@ -2952,10 +2953,10 @@ class TextSizeForWarningRule {
           if (this.refSize === null) {
             this.refSize = currSize;
           } else if (currSize !== null && this.refSize !== currSize) {
-            pushError(ERROR_TEXT_SIZES_SHOULD_BE_EQUAL, "Text sizes inside 'warning' block are not equal", parent.loc)
+            pushError(ERROR_TEXT_SIZES_SHOULD_BE_EQUAL, "Text sizes inside 'warning' block are not equal", this.location);
           }
         } else {
-          pushError(ERROR_TEXT_NO_SIZE_VALUE, "Text block with 'mods' has no 'size' block", parent.loc)
+          pushError(ERROR_TEXT_NO_SIZE_VALUE, "Text block with 'mods' has no 'size' block", this.location);
         }
       }
     }
@@ -3036,13 +3037,13 @@ class PlaceholderSizeForWarningRule {
 
       if (mods) {
         const size = mods.value.children.find((e) => { return e.key.value === "size" });
-        console.log(`size: `, size);
 
         if (!["s", "m", "l"].includes(size.value.value)) {
-          pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", parent.loc);
+          //pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", parent.loc);
+          pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", node.value.loc);
         }
       } else {
-        pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", parent.loc);
+        pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", node.value.loc);
       }
     }
   }
@@ -3093,6 +3094,7 @@ function traverse(node) {
 function lint(jsonString) {
   const ast = json_to_ast__WEBPACK_IMPORTED_MODULE_0___default()(jsonString);
   traverse(ast);
+  console.log('errors: ', errors);
   return errors;
 }
 
@@ -3222,7 +3224,7 @@ const jsonString = `{
                                                             "block": "placeholder",
                                                             "mods": {
                                                                 "view": "primary",
-                                                                "size": "s"
+                                                                "size": "ss"
                                                             }
                                                         },
                                                         {
@@ -5696,7 +5698,28 @@ const jsonString = `{
         }
     ]
 }`;
-//lint(jsonString);
+// lint(`{
+//     "block": "warning",
+//     "content": [
+//         {
+//             "block": "placeholder",
+//             "mods": { "size": "m" }
+//         },
+//         {
+//             "elem": "content",
+//             "content": [
+//                 {
+//                     "block": "text",
+//                     "mods": { "size": "m" }
+//                 },
+//                 {
+//                     "block": "text",
+//                     "mods": { "size": "l" }
+//                 }
+//             ]
+//         }
+//     ]
+// }`);
 
 /***/ })
 

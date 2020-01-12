@@ -110,7 +110,7 @@ const jsonString = `{
                                                             "block": "placeholder",
                                                             "mods": {
                                                                 "view": "primary",
-                                                                "size": "s"
+                                                                "size": "ss"
                                                             }
                                                         },
                                                         {
@@ -2584,4 +2584,25 @@ const jsonString = `{
         }
     ]
 }`;
-//lint(jsonString);
+// lint(`{
+//     "block": "warning",
+//     "content": [
+//         {
+//             "block": "placeholder",
+//             "mods": { "size": "m" }
+//         },
+//         {
+//             "elem": "content",
+//             "content": [
+//                 {
+//                     "block": "text",
+//                     "mods": { "size": "m" }
+//                 },
+//                 {
+//                     "block": "text",
+//                     "mods": { "size": "l" }
+//                 }
+//             ]
+//         }
+//     ]
+// }`);
