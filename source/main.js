@@ -110,7 +110,7 @@ const jsonString = `{
                                                             "block": "placeholder",
                                                             "mods": {
                                                                 "view": "primary",
-                                                                "size": "m"
+                                                                "size": "s"
                                                             }
                                                         },
                                                         {

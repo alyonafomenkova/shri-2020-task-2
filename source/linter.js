@@ -2,6 +2,8 @@ import jsonToAst from 'json-to-ast';
 
 const ERROR_TEXT_SIZES_SHOULD_BE_EQUAL = "WARNING.TEXT_SIZES_SHOULD_BE_EQUAL";
 const ERROR_TEXT_NO_SIZE_VALUE = "WARNING.TEXT_NO_SIZE_VALUE";
+const INVALID_BUTTON_SIZE = "WARNING.INVALID_BUTTON_SIZE";
+const INVALID_PLACEHOLDER_SIZE = "WARNING.INVALID_PLACEHOLDER_SIZE";
 
 const isObjectNode = (node) => node.type === "Object";
 const isPropertyNode = (node) => node.type === "Property";
@@ -23,7 +25,7 @@ function pushError(code, message, location) {
     }
   };
   errors.push(item);
-  console.log(errors);
+  console.log('errors: ', errors);
 }
 
 class TextSizeForWarningRule {
@@ -69,7 +71,96 @@ class TextSizeForWarningRule {
   }
 }
 
+class ButtonSizeForWarningRule {
+
+  constructor() {
+    this.canStart = true;
+    this.inProgress = false;
+    this.refSize = null;
+    this.buttons = [];
+    this.sizes = ['xxxs', 'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xxxxl'];
+  }
+
+  process(parent, node) {
+    if (this.canStart) {
+      const key = node.key.value;
+      const value = node.value.value;
+
+      if (key === "block" && value === "warning") {
+        console.log("[START] Checking button size rule");
+        this.canStart = false;
+        this.inProgress = true;
+        traverse(parent);
+        this.inProgress = false;
+        console.log("[FINISH] Checking button size rule");
+      }
+    } else if (this.inProgress && node.value.value === "text") {
+      const mods = parent.children.find((e) => { return e.key.value === "mods" });
+
+      if (mods) {
+        const size = mods.value.children.find((e) => { return e.key.value === "size" });
+
+        if (size) {
+          const currSize = size.value.value;
+
+          if (this.refSize === null) {
+            this.refSize = currSize;
+            if (this.inProgress && node.value.value === "button") {
+              console.log(`find button`);
+            } else { console.log(`doesn't find button`); }
+          } else {
+            pushError(ERROR_TEXT_NO_SIZE_VALUE, "Text block with 'mods' has no 'size' block", parent.loc)
+          }
+          //   if (currSize !== null && this.refSize !== currSize) {
+          //   pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more", parent.loc)
+          // }
+        }
+      }
+    }
+  }
+}
+
+class PlaceholderSizeForWarningRule {
+
+  constructor() {
+    this.canStart = true;
+    this.inProgress = false;
+  }
+
+  process(parent, node) {
+    if (this.canStart) {
+      const key = node.key.value;
+      const value = node.value.value;
+
+      if (key === "block" && value === "warning") {
+        console.log("[START] Checking placeholder size rule");
+        this.canStart = false;
+        this.inProgress = true;
+        traverse(parent);
+        this.inProgress = false;
+        console.log("[FINISH] Checking placeholder size rule");
+      }
+    } else if (this.inProgress && node.value.value === "placeholder") {
+      const mods = parent.children.find((e) => { return e.key.value === "mods" });
+
+      if (mods) {
+        const size = mods.value.children.find((e) => { return e.key.value === "size" });
+        console.log(`size: `, size);
+
+        if (!["s", "m", "l"].includes(size.value.value)) {
+          pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", parent.loc);
+        }
+      } else {
+        pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", parent.loc);
+      }
+    }
+  }
+}
+
 const textSizeForWarningRule = new TextSizeForWarningRule();
+//const buttonSizeForWarningRule = new ButtonSizeForWarningRule();
+const placeholderSizeForWarningRule = new PlaceholderSizeForWarningRule();
+
 
 function traverse(node) {
   const startLine = node.loc.start.line;
@@ -85,6 +176,8 @@ function traverse(node) {
 
     if (isLiteralPropertyType(type)) {
       textSizeForWarningRule.process(parent, node);
+      //buttonSizeForWarningRule.process(parent, node);
+      placeholderSizeForWarningRule.process(parent, node)
 
     } else if (isArrayPropertyType(type)) {
       const children = node.value.children;
