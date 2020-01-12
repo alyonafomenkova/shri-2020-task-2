@@ -2584,25 +2584,25 @@ const jsonString = `{
         }
     ]
 }`;
-// lint(`{
-//     "block": "warning",
-//     "content": [
-//         {
-//             "block": "placeholder",
-//             "mods": { "size": "m" }
-//         },
-//         {
-//             "elem": "content",
-//             "content": [
-//                 {
-//                     "block": "text",
-//                     "mods": { "size": "m" }
-//                 },
-//                 {
-//                     "block": "text",
-//                     "mods": { "size": "l" }
-//                 }
-//             ]
-//         }
-//     ]
-// }`);
+lint(`{
+    "block": "warning",
+    "content": [
+        {
+            "block": "placeholder",
+            "mods": { "size": "lk" }
+        },
+        {
+            "elem": "content",
+            "content": [
+                {
+                    "block": "text",
+                    "mods": { "size": "m" }
+                },
+                {
+                    "block": "text",
+                    "mods": { "size": "l" }
+                }
+            ]
+        }
+    ]
+}`);

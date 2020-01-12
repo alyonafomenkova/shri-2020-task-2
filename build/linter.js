@@ -3017,6 +3017,7 @@ class PlaceholderSizeForWarningRule {
   constructor() {
     this.canStart = true;
     this.inProgress = false;
+    this.location = null;
   }
 
   process(parent, node) {
@@ -3033,6 +3034,7 @@ class PlaceholderSizeForWarningRule {
         console.log("[FINISH] Checking placeholder size rule");
       }
     } else if (this.inProgress && node.value.value === "placeholder") {
+      this.location = parent.loc;
       const mods = parent.children.find((e) => { return e.key.value === "mods" });
 
       if (mods) {
@@ -3040,10 +3042,10 @@ class PlaceholderSizeForWarningRule {
 
         if (!["s", "m", "l"].includes(size.value.value)) {
           //pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", parent.loc);
-          pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", node.value.loc);
+          pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", this.location);
         }
       } else {
-        pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", node.value.loc);
+        pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", this.location);
       }
     }
   }
@@ -5698,28 +5700,28 @@ const jsonString = `{
         }
     ]
 }`;
-// lint(`{
-//     "block": "warning",
-//     "content": [
-//         {
-//             "block": "placeholder",
-//             "mods": { "size": "m" }
-//         },
-//         {
-//             "elem": "content",
-//             "content": [
-//                 {
-//                     "block": "text",
-//                     "mods": { "size": "m" }
-//                 },
-//                 {
-//                     "block": "text",
-//                     "mods": { "size": "l" }
-//                 }
-//             ]
-//         }
-//     ]
-// }`);
+Object(_linter_js__WEBPACK_IMPORTED_MODULE_0__["lint"])(`{
+    "block": "warning",
+    "content": [
+        {
+            "block": "placeholder",
+            "mods": { "size": "lk" }
+        },
+        {
+            "elem": "content",
+            "content": [
+                {
+                    "block": "text",
+                    "mods": { "size": "m" }
+                },
+                {
+                    "block": "text",
+                    "mods": { "size": "l" }
+                }
+            ]
+        }
+    ]
+}`);
 
 /***/ })
 
