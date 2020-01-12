@@ -26,76 +26,16 @@ function pushError(code, message, location) {
   };
   errors.push(item);
 }
-
-class ButtonSizeForWarningRule {
-
-  constructor() {
-    this.canStart = true;
-    this.inProgress = false;
-    this.refSize = null;
-    this.buttons = [];//
-    this.location = null;
-    this.sizes = ['xxxs', 'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xxxxl'];
-  }
-
-  contains (array, element) {
-    for (let i = 0; i < array.length - 1; i++) {
-      if (array[i] === element) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  process(parent, node) {
-    if (this.canStart) {
-      const key = node.key.value;
-      const value = node.value.value;
-
-      if (key === "block" && value === "warning") {
-        console.log("[START] Checking button size rule");
-        this.canStart = false;
-        this.inProgress = true;
-        traverse(parent);
-        this.inProgress = false;
-        console.log("[FINISH] Checking button size rule");
-      }
-    } else if (this.inProgress && node.value.value === "text") {
-      const mods = parent.children.find((e) => { return e.key.value === "mods" });
-
-      if (mods) {
-        const size = mods.value.children.find((e) => { return e.key.value === "size" });
-
-        if (size) {
-          const currSize = size.value.value;
-
-          if (this.refSize === null) {
-            this.refSize = currSize;
-          } else {
-            pushError(ERROR_TEXT_NO_SIZE_VALUE, "Text block with 'mods' has no 'size' block", parent.loc)
-          }
-        }
-      }
-    if (this.inProgress && node.value.value === "button") {
-      this.location = parent.loc;
-      const mods = parent.children.find((e) => { return e.key.value === "mods" });
-      if (mods) {
-        const buttonSize = mods.value.children.find((e) => { return e.key.value === "size" });
-        if (!contains(this.sizes, buttonSize)) {//
-          console.log(`не может быть такого размера: ${buttonSize}`);
-        } else {
-          const refButtonSize = this.sizes[this.sizes.findIndex((size) => size === buttonSize) + 1];
-          if (buttonSize !== this.refSize) {
-            console.log(`неверный размер! Должен быть refButtonSize: ${this.refSize}`);
-          }
-        }//
-      }
-
-      console.log(`find button`);
-    } else { pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more", this.location) }
+// вынести в другой модуль
+function contains(array, element) { // TODO: переименовать метод
+  for (let i = 0; i < array.length - 1; i++) {
+    if (array[i] === element) {
+      return true;
     }
   }
+  return false;
 }
+//
 
 class PlaceholderSizeForWarningRule {
 
@@ -142,6 +82,7 @@ class WarningCheck {
     this.inProgress = false;
     this.refSize = null;
     this.location = null;
+    this.sizes = ['xxxs', 'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xxxxl', 'xxxxxl'];
   }
 
   process(parent, node) {
@@ -151,12 +92,12 @@ class WarningCheck {
 
       if (key === "block" && value === "warning") {
         this.location = parent.loc;
-        console.log("[START] Checking text size rule");
+        console.log("[START] Checking warning");
         this.canStart = false;
         this.inProgress = true;
         traverse(parent);
         this.inProgress = false;
-        console.log("[FINISH] Checking text size rule");
+        console.log("[FINISH] Checking warning");
       }
     } else if (this.inProgress && node.value.value === "text") {
       const mods = parent.children.find((e) => { return e.key.value === "mods" });
@@ -177,11 +118,29 @@ class WarningCheck {
         }
       }
     }
+    // button size rule
+    if (this.inProgress && node.value.value === "button") {
+      this.location = parent.loc;
+      const mods = parent.children.find((e) => { return e.key.value === "mods" });
+      if (mods) {
+        const button = mods.value.children.find((e) => { return e.key.value === "size" });
+        const buttonSize = button.value.value;
+        if (!contains(this.sizes, buttonSize)) {
+          pushError(INVALID_BUTTON_SIZE, `Button cannot be this size.`, this.location);
+        } else {
+          const refButtonSize = this.sizes[this.sizes.findIndex((size) => size === this.refSize) + 1];
+          if (buttonSize !== refButtonSize) {
+            console.log(`неверный размер! Должен быть refButtonSize: ${this.refSize}`);
+            pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location);
+          }
+        }// end else
+      }
+    }
+    //
   }
 }
 
 
-// const buttonSizeForWarningRule = new ButtonSizeForWarningRule();
 // const placeholderSizeForWarningRule = new PlaceholderSizeForWarningRule();
 const warningCheck = new WarningCheck();
 
@@ -199,7 +158,6 @@ function traverse(node) {
     const type = node.value.type;
 
     if (isLiteralPropertyType(type)) {
-      //buttonSizeForWarningRule.process(parent, node);
       //placeholderSizeForWarningRule.process(parent, node);
       warningCheck.process(parent, node);
 
