@@ -7,6 +7,7 @@ const INVALID_PLACEHOLDER_SIZE = "WARNING.INVALID_PLACEHOLDER_SIZE";
 const INVALID_BUTTON_POSITION = "WARNING.INVALID_BUTTON_POSITION";
 const SEVERAL_H1 = "TEXT.SEVERAL_H1";
 const INVALID_H2_POSITION = "TEXT.INVALID_H2_POSITION";
+const INVALID_H3_POSITION = "TEXT.INVALID_H3_POSITION";
 
 const isObjectNode = (node) => node.type === "Object";
 const isPropertyNode = (node) => node.type === "Property";
@@ -129,7 +130,7 @@ class TitlesCheck {
     this.lastTextBlock = null;
   }
 
-  process(parent, node) {
+  process(parent, node, depth) {
     const key = node.key.value;
     const value = node.value.value;
 
@@ -146,17 +147,18 @@ class TitlesCheck {
 
         this.titles.push({
           title: value,
-          location: loc
+          location: loc,
+          depth: depth
         });
       }
     }
   }
 
   onComplete() {
-    console.log("Analyze collected headers");
     console.log("this.titles: ", this.titles);
     //const titles = this.titles.slice();
     const arrayH1 = this.titles.filter(element => element.title === "h1");
+
     if (arrayH1.length === 0) {
       throw error(`No H1.`);
     } else {
@@ -164,18 +166,36 @@ class TitlesCheck {
         pushError(SEVERAL_H1, "Can't be several h1.", arrayH1[i].location);
       }
     }
-    // TEXT.INVALID_H2_POSITION
-    const isValidH2Position = this.titles.length >= 2 && this.titles[0].title === "h1" && this.titles[1].title === "h2";
-    if (!isValidH2Position) {
-      pushError(INVALID_H2_POSITION, "H2 shoud be after H1.", this.titles[0].location);
+
+    for (let i = 1; i < this.titles.length; i++) {
+      const prevTitle = this.titles[i - 1].title;
+      const prevLocation = this.titles[i - 1].location;
+      const prevDepth = this.titles[i - 1].depth;
+
+      const currTitle = this.titles[i].title;
+      const currLocation = this.titles[i].location;
+      const currDepth = this.titles[i].depth;
+
+      if (prevDepth >= currDepth) {
+        if (prevTitle === 'h2' && currTitle === 'h1') {
+          pushError(INVALID_H2_POSITION, "H2 should be after H1", prevLocation);
+        } else if (prevTitle === 'h3' && currTitle === 'h2') {
+          pushError(INVALID_H3_POSITION, "H3 should be after H2", prevLocation);
+        } else if (prevTitle === 'h3' && currTitle === 'h1') {
+          pushError(INVALID_H3_POSITION, "H3 should be after H1", prevLocation);
+        }
+      }
     }
   }
 }
 
 const warningCheck = new WarningCheck();
 const titlesCheck = new TitlesCheck();
+let depth = 0;
 
 function traverse(node) {
+  console.log(`-> ${depth}`);
+  depth++;
   const startLine = node.loc.start.line;
   const endLine = node.loc.end.line;
 
@@ -189,7 +209,7 @@ function traverse(node) {
 
     if (isLiteralPropertyType(type)) {
       // warningCheck.process(parent, node);
-      titlesCheck.process(parent, node);
+      titlesCheck.process(parent, node, depth);
 
     } else if (isArrayPropertyType(type)) {
       const children = node.value.children;
@@ -209,6 +229,8 @@ function traverse(node) {
   } else {
     throw new Error(`Unknown node type: ${node.type} on lines ${startLine}..${endLine}`);
   }
+  depth--;
+  console.log(`<- ${depth}`);
 }
 
 export function lint (jsonString) {

@@ -2606,28 +2606,39 @@ const jsonString = `{
 
 // lint(`{
 //      "block": "warning",
+//      "abc": {
+//         "block": "text",
+//         "mods": { "size": "s" },
+//         "mods": { "type": "h2" }
+//      },
 //      "content": [
 //        {
 //         "block": "text",
-//         "mods": { "size": "s" }
-//       },
-//       {
-//          "block": "text",
-//          "mods": { "type": "h2" }
-//       },
-//       {
+//         "mods": { "size": "s" },
+//         "mods": { "type": "h1" }
+//        },
+//        {
 //         "block": "text",
-//         "mods": { "size": "b" },
+//         "mods": { "size": "s" },
+//         "mods": { "type": "h2" }
+//        },
+//        {
+//         "block": "text",
+//         "mods": { "size": "s" },
+//         "mods": { "type": "h2" }
+//        },
+//        {
+//         "block": "text",
+//         "mods": { "size": "s" },
+//         "mods": { "type": "h2" },
 //         "xyz": {
-//           "mods": { "type": "h1" }
-//         }
-//       },
-//       {
-//          "block": "text",
-//          "mods": { "type": "h1" },
-//          "xyz": {
 //           "mods": { "type": "h3" }
 //         }
-//       }
+//        },
+//        {
+//         "block": "text",
+//         "mods": { "size": "s" },
+//         "mods": { "type": "h2" }
+//        }
 //      ]
 //  }`);
