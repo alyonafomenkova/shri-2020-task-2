@@ -105,7 +105,7 @@ class WarningCheck {
           }
           }// end else
       }//end else
-      }
+    }
     // placeholder rule
     if (this.inProgress && node.value.value === "placeholder") {
       this.location = parent.loc;
@@ -232,8 +232,8 @@ function traverse(node) {
   //console.log(`<- ${depth}`);
 }
 
-//globalThis.lint = function(jsonString) {
-export function lint(jsonString) {
+globalThis.lint = function(jsonString) {
+//export function lint(jsonString) {
   const ast = jsonToAst(jsonString);
   traverse(ast);
   titlesCheck.onComplete();
