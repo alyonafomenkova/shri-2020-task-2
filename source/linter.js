@@ -5,7 +5,7 @@ const ERROR_TEXT_NO_SIZE_VALUE = "WARNING.TEXT_NO_SIZE_VALUE";
 const INVALID_BUTTON_SIZE = "WARNING.INVALID_BUTTON_SIZE";
 const INVALID_PLACEHOLDER_SIZE = "WARNING.INVALID_PLACEHOLDER_SIZE";
 const INVALID_BUTTON_POSITION = "WARNING.INVALID_BUTTON_POSITION";
-const NO_H1 = "TEXT.NO_H1";
+const SEVERAL_H1 = "TEXT.SEVERAL_H1";
 
 const isObjectNode = (node) => node.type === "Object";
 const isPropertyNode = (node) => node.type === "Property";
@@ -120,46 +120,47 @@ class WarningCheck {
     }
   }
 }
+
 class TitlesCheck {
 
   constructor() {
-    this.canStart = true;
-    this.inProgress = false;
-    this.refType = null;
-    this.CountH1 = 0;
-    this.location = null;
+    this.titles = [];
+    this.lastTextBlock = null;
   }
 
   process(parent, node) {
-    if (this.canStart) {
-      const key = node.key.value;
-      const value = node.value.value;
+    const key = node.key.value;
+    const value = node.value.value;
 
-      if (key === "block" && value === "text") {
-        this.location = parent.loc;
-        console.log("[START] Checking block");
-        this.canStart = false;
-        this.inProgress = true;
-        traverse(node);//
-        this.inProgress = false;
-        console.log("[FINISH] Checking block");
+    if (key === "block" && value === "text") {
+      this.lastTextBlock = parent;
+    }
+
+    if (key === "type" && (value === "h1" || value === "h2" || value === "h3")) {
+      if (this.lastTextBlock == null) {
+        console.error("Last text block is null");
+      } else {
+        const loc = this.lastTextBlock.loc;
+        console.log(`${value.toUpperCase()} inside TEXT BLOCK: ${loc.start.line}...${loc.end.line}`);
+
+        this.titles.push({
+          title: value,
+          location: loc
+        });
       }
-    } else if (this.inProgress && node.value.value === "text") {
-      const mods = parent.children.find((e) => { return e.key.value === "mods" });
+    }
+  }
 
-      if (mods) {
-        const type = mods.value.children.find((e) => { return e.key.value === "type" });
-
-        if (type) {
-          const currType = type.value.value;
-
-          if (currType === "h1") {
-            console.log(`H1 find!!!!!!!!!!`);
-            this.CountH1 += 1;
-          } else {
-            pushError(NO_H1, "There is no H1 on the page.", this.location);
-          }
-        }
+  onComplete() {
+    console.log("Analyze collected headers");
+    console.log("this.titles: ", this.titles);
+    const titles = this.titles.slice();
+    const arrayH1 = this.titles.filter(element => element.title === "h1");
+    if (arrayH1.length === 0) {
+      throw error(`No H1.`);
+    } else {
+      for (let i = 1; i < arrayH1.length; i++) {
+        pushError(SEVERAL_H1, "Can't be several h1.", arrayH1[i].location);
       }
     }
   }
@@ -181,7 +182,7 @@ function traverse(node) {
     const type = node.value.type;
 
     if (isLiteralPropertyType(type)) {
-      warningCheck.process(parent, node);//
+      // warningCheck.process(parent, node);
       titlesCheck.process(parent, node);
 
     } else if (isArrayPropertyType(type)) {
@@ -204,9 +205,10 @@ function traverse(node) {
   }
 }
 
-globalThis.lint = function (jsonString) {
+export function lint (jsonString) {
   const ast = jsonToAst(jsonString);
   traverse(ast);
+  titlesCheck.onComplete();
   console.log('errors: ', errors);
   return errors;
 }

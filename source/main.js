@@ -2609,11 +2609,25 @@ const jsonString = `{
 //      "content": [
 //        {
 //         "block": "text",
-//         "mods": { "type": "h1" }
+//         "mods": { "size": "s" }
+//       },
+//       {
+//          "block": "text",
+//          "mods": { "type": "h2" }
 //       },
 //       {
 //         "block": "text",
-//         "mods": { "type": "h1" }
+//         "mods": { "size": "b" },
+//         "xyz": {
+//           "mods": { "type": "h1" }
+//         }
+//       },
+//       {
+//          "block": "text",
+//          "mods": { "type": "h1" },
+//          "xyz": {
+//           "mods": { "type": "h3" }
+//         }
 //       }
 //      ]
 //  }`);
