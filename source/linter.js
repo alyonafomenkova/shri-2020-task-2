@@ -233,7 +233,7 @@ function traverse(node) {
   console.log(`<- ${depth}`);
 }
 
-export function lint (jsonString) {
+globalThis.lint = function(jsonString) {
   const ast = jsonToAst(jsonString);
   traverse(ast);
   titlesCheck.onComplete();

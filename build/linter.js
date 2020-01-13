@@ -2881,12 +2881,11 @@ module.exports = g;
 /*!**************************!*\
   !*** ./source/linter.js ***!
   \**************************/
-/*! exports provided: lint */
+/*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "lint", function() { return lint; });
 /* harmony import */ var json_to_ast__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! json-to-ast */ "./node_modules/json-to-ast/build.js");
 /* harmony import */ var json_to_ast__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(json_to_ast__WEBPACK_IMPORTED_MODULE_0__);
 
@@ -3124,7 +3123,7 @@ function traverse(node) {
   console.log(`<- ${depth}`);
 }
 
-function lint (jsonString) {
+globalThis.lint = function(jsonString) {
   const ast = json_to_ast__WEBPACK_IMPORTED_MODULE_0___default()(jsonString);
   traverse(ast);
   titlesCheck.onComplete();
