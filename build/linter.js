@@ -3098,7 +3098,7 @@ function traverse(node) {
     const type = node.value.type;
 
     if (isLiteralPropertyType(type)) {
-      // warningCheck.process(parent, node);
+      warningCheck.process(parent, node);
       titlesCheck.process(parent, node, depth);
 
     } else if (isArrayPropertyType(type)) {
