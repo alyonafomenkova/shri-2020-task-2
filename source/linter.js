@@ -204,7 +204,7 @@ function traverse(node) {
   }
 }
 
-export function lint(jsonString) {
+globalThis.lint = function (jsonString) {
   const ast = jsonToAst(jsonString);
   traverse(ast);
   console.log('errors: ', errors);
