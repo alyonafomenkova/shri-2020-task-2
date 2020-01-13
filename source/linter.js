@@ -143,7 +143,7 @@ class TitlesCheck {
         console.error("Last text block is null");
       } else {
         const loc = this.lastTextBlock.loc;
-        console.log(`${value.toUpperCase()} inside TEXT BLOCK: ${loc.start.line}...${loc.end.line}`);
+        // console.log(`${value.toUpperCase()} inside TEXT BLOCK: ${loc.start.line}...${loc.end.line}`);
 
         this.titles.push({
           title: value,
@@ -155,12 +155,11 @@ class TitlesCheck {
   }
 
   onComplete() {
-    console.log("this.titles: ", this.titles);
-    //const titles = this.titles.slice();
     const arrayH1 = this.titles.filter(element => element.title === "h1");
 
     if (arrayH1.length === 0) {
-      throw error(`No H1.`);
+      console.error(`No H1`);
+      // throw new Error(`No H1`);
     } else {
       for (let i = 1; i < arrayH1.length; i++) {
         pushError(SEVERAL_H1, "Can't be several h1.", arrayH1[i].location);
@@ -194,7 +193,7 @@ const titlesCheck = new TitlesCheck();
 let depth = 0;
 
 function traverse(node) {
-  console.log(`-> ${depth}`);
+  //console.log(`-> ${depth}`);
   depth++;
   const startLine = node.loc.start.line;
   const endLine = node.loc.end.line;
@@ -230,10 +229,11 @@ function traverse(node) {
     throw new Error(`Unknown node type: ${node.type} on lines ${startLine}..${endLine}`);
   }
   depth--;
-  console.log(`<- ${depth}`);
+  //console.log(`<- ${depth}`);
 }
 
-globalThis.lint = function(jsonString) {
+//globalThis.lint = function(jsonString) {
+export function lint(jsonString) {
   const ast = jsonToAst(jsonString);
   traverse(ast);
   titlesCheck.onComplete();

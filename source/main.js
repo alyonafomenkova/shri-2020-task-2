@@ -2585,7 +2585,7 @@ const jsonString = `{
     ]
 }`;
 //lint(jsonString);
-
+// warning test sizes не проходит
 // lint(`{
 //      "block": "warning",
 //      "content": [
@@ -2603,7 +2603,15 @@ const jsonString = `{
 //       }
 //      ]
 //  }`);
+// lint(`{
+//     "block": "warning",
+//     "content": [
+//         { "block": "text", "mods": { "size": "l" } },
+//         { "block": "text", "mods": { "size": "m" } }
+//     ]
+// }`)
 
+// ---------------------------------------------------------------------------------   TEST TITLES.
 // lint(`{
 //      "block": "warning",
 //      "abc": {

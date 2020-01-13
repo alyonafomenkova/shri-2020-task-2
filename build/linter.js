@@ -2881,11 +2881,12 @@ module.exports = g;
 /*!**************************!*\
   !*** ./source/linter.js ***!
   \**************************/
-/*! no exports provided */
+/*! exports provided: lint */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "lint", function() { return lint; });
 /* harmony import */ var json_to_ast__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! json-to-ast */ "./node_modules/json-to-ast/build.js");
 /* harmony import */ var json_to_ast__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(json_to_ast__WEBPACK_IMPORTED_MODULE_0__);
 
@@ -3033,7 +3034,7 @@ class TitlesCheck {
         console.error("Last text block is null");
       } else {
         const loc = this.lastTextBlock.loc;
-        console.log(`${value.toUpperCase()} inside TEXT BLOCK: ${loc.start.line}...${loc.end.line}`);
+        // console.log(`${value.toUpperCase()} inside TEXT BLOCK: ${loc.start.line}...${loc.end.line}`);
 
         this.titles.push({
           title: value,
@@ -3045,12 +3046,11 @@ class TitlesCheck {
   }
 
   onComplete() {
-    console.log("this.titles: ", this.titles);
-    //const titles = this.titles.slice();
     const arrayH1 = this.titles.filter(element => element.title === "h1");
 
     if (arrayH1.length === 0) {
-      throw error(`No H1.`);
+      console.error(`No H1`);
+      // throw new Error(`No H1`);
     } else {
       for (let i = 1; i < arrayH1.length; i++) {
         pushError(SEVERAL_H1, "Can't be several h1.", arrayH1[i].location);
@@ -3084,7 +3084,7 @@ const titlesCheck = new TitlesCheck();
 let depth = 0;
 
 function traverse(node) {
-  console.log(`-> ${depth}`);
+  //console.log(`-> ${depth}`);
   depth++;
   const startLine = node.loc.start.line;
   const endLine = node.loc.end.line;
@@ -3120,10 +3120,11 @@ function traverse(node) {
     throw new Error(`Unknown node type: ${node.type} on lines ${startLine}..${endLine}`);
   }
   depth--;
-  console.log(`<- ${depth}`);
+  //console.log(`<- ${depth}`);
 }
 
-globalThis.lint = function(jsonString) {
+//globalThis.lint = function(jsonString) {
+function lint(jsonString) {
   const ast = json_to_ast__WEBPACK_IMPORTED_MODULE_0___default()(jsonString);
   traverse(ast);
   titlesCheck.onComplete();
@@ -5730,7 +5731,7 @@ const jsonString = `{
     ]
 }`;
 //lint(jsonString);
-
+// warning test sizes не проходит
 // lint(`{
 //      "block": "warning",
 //      "content": [
@@ -5748,7 +5749,15 @@ const jsonString = `{
 //       }
 //      ]
 //  }`);
+// lint(`{
+//     "block": "warning",
+//     "content": [
+//         { "block": "text", "mods": { "size": "l" } },
+//         { "block": "text", "mods": { "size": "m" } }
+//     ]
+// }`)
 
+// ---------------------------------------------------------------------------------   TEST TITLES.
 // lint(`{
 //      "block": "warning",
 //      "abc": {
