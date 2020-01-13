@@ -6,6 +6,7 @@ const INVALID_BUTTON_SIZE = "WARNING.INVALID_BUTTON_SIZE";
 const INVALID_PLACEHOLDER_SIZE = "WARNING.INVALID_PLACEHOLDER_SIZE";
 const INVALID_BUTTON_POSITION = "WARNING.INVALID_BUTTON_POSITION";
 const SEVERAL_H1 = "TEXT.SEVERAL_H1";
+const INVALID_H2_POSITION = "TEXT.INVALID_H2_POSITION";
 
 const isObjectNode = (node) => node.type === "Object";
 const isPropertyNode = (node) => node.type === "Property";
@@ -154,7 +155,7 @@ class TitlesCheck {
   onComplete() {
     console.log("Analyze collected headers");
     console.log("this.titles: ", this.titles);
-    const titles = this.titles.slice();
+    //const titles = this.titles.slice();
     const arrayH1 = this.titles.filter(element => element.title === "h1");
     if (arrayH1.length === 0) {
       throw error(`No H1.`);
@@ -162,6 +163,11 @@ class TitlesCheck {
       for (let i = 1; i < arrayH1.length; i++) {
         pushError(SEVERAL_H1, "Can't be several h1.", arrayH1[i].location);
       }
+    }
+    // TEXT.INVALID_H2_POSITION
+    const isValidH2Position = this.titles.length >= 2 && this.titles[0].title === "h1" && this.titles[1].title === "h2";
+    if (!isValidH2Position) {
+      pushError(INVALID_H2_POSITION, "H2 shoud be after H1.", this.titles[0].location);
     }
   }
 }
