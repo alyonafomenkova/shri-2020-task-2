@@ -17,7 +17,7 @@ const isLiteralPropertyType = (type) => type === "Literal";
 const isArrayPropertyType = (type) => type === "Array";
 const isObjectPropertyType = (type) => type === "Object";
 
-const errors = [];
+let errors = [];
 
 function pushError(code, message, location) {
   const item = {
@@ -48,6 +48,7 @@ class WarningCheck {
     this.inProgress = false;
     this.refSize = null;
     this.location = null;
+    this.lastPlaceholderBlock = null;
     this.buttonEnabled = false;
     this.sizes = ["xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl", "xxxxl", "xxxxxl"];
   }
@@ -85,26 +86,30 @@ class WarningCheck {
         }
       }
     }
-    // placeholder rule
+    //placeholder rule
     if (this.inProgress && node.value.value === "placeholder") {
-      this.location = parent.loc;
-      console.log('placeholder внутри warning найден тут: ', this.location);
+      this.lastPlaceholderBlock = parent; //
+      //this.location = parent.loc;
+      //console.log('placeholder внутри warning найден тут: ', this.lastPlaceholderBlock.loc);
       this.buttonEnabled = true;
-      const mods = parent.children.find((e) => { return e.key.value === "mods" });
-      if (mods) {
-        const size = mods.value.children.find((e) => { return e.key.value === "size" });
-        if (!["s", "m", "l"].includes(size.value.value)) {
-          pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", this.location);
-        }
+      //
+      if (this.lastPlaceholderBlock == null) {
+        console.error("Last placeholder block is null");
       } else {
-        pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", this.location);
+        const loc = this.lastPlaceholderBlock.loc;
+        //console.log(`${node.value.value.toUpperCase()} inside PLACEHOLDER BLOCK: ${loc.start.line}...${loc.end.line}`);
+        const mods = parent.children.find((e) => { return e.key.value === "mods" });
+        if (mods) {
+          const size = mods.value.children.find((e) => { return e.key.value === "size" });
+          if (!["s", "m", "l"].includes(size.value.value)) {
+            pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", loc);
+          }
+        } else {
+          pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", loc);
+        }
       }
+      //
     }
-    // new button size rule! :)
-    // if (this.inProgress && node.value.value === "button") {
-    //   this.location = parent.loc;
-    //   console.log('Кнопка внутри warning найдена тут: ', this.location);
-    // }
 
     // button size rule
     // if (this.inProgress && node.value.value === "button") {
@@ -207,6 +212,7 @@ function reset() {
   console.log("Reset global variables");
   warningCheck = new WarningCheck();
   titlesCheck = new TitlesCheck();
+  errors = [];
   depth = 0;
 }
 
@@ -250,7 +256,6 @@ function traverse(node) {
   //console.log(`<- ${depth}`);
 }
 
-//export function lint(jsonString) {
 function lint(jsonString) {
   const ast = jsonToAst(jsonString);
   traverse(ast);
@@ -261,50 +266,16 @@ function lint(jsonString) {
 
 globalThis.lint = lint;
 //globalThis.reset = reset; // для локальных тестов
-//
 
-const json = `{
+const invalidPlaceholderSize = `{
     "block": "warning",
     "content": [
-        { "block": "placeholder", "mods": { "size": "m" } },
-        { "block": "button", "mods": { "size": "m" } }
-    ]
-}`;
-
-const wrong = `{
-    "block": "warning",
-    "content": [
+        { "block": "placeholder", "mods": { "size": "xs" } },
         { "block": "button", "mods": { "size": "m" } },
-        { "block": "placeholder", "mods": { "size": "m" } }
+        { "block": "text", "mods": { "size": "m" } },
+        { "block": "text", "mods": { "size": "l" } }
     ]
 }`;
-// s, m, l
-const placeholser1 = `{
-    "block": "warning",
-    "content": [
-        { "block": "placeholder", "mods": { "size": "s" } },
-        { "block": "button", "mods": { "size": "m" } }
-    ]
-}`;
-const placeholser2 = `{
-    "block": "warning",
-    "content": [
-        { "block": "placeholder", "mods": { "size": "m" } },
-        { "block": "button", "mods": { "size": "m" } }
-    ]
-}`;
-const placeholser3 = `{
-    "block": "warning",
-    "content": [
-        { "block": "placeholder", "mods": { "size": "l" } },
-        { "block": "button", "mods": { "size": "m" } }
-    ]
-}`;
-const placeholser4 = `{
-    "block": "warning",
-    "content": [
-        { "block": "placeholder", "mods": { "size": "ss" } },
-        { "block": "button", "mods": { "size": "m" } }
-    ]
-}`;
-//lint(placeholser4);//
+
+
+//lint(invalidPlaceholderSize);//
