@@ -1,6 +1,6 @@
 const path = require('path');
 module.exports = {
-  entry: './source/main.js',
+  entry: './source/linter.js',
   output: {
     path: path.resolve(__dirname, 'build'),
     filename: 'linter.js'
