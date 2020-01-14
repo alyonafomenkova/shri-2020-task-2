@@ -249,7 +249,7 @@ function lint(jsonString) {
 };
 
 globalThis.lint = lint;
-globalThis.reset = reset;
+//globalThis.reset = reset; // для локальных тестов
 //
 const validTextSizesString = `{
     "block": "warning",
