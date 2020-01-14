@@ -1,4 +1,3 @@
-//import jsonToAst from 'json-to-ast';
 const jsonToAst = require("json-to-ast");
 
 const ERROR_TEXT_SIZES_SHOULD_BE_EQUAL = "WARNING.TEXT_SIZES_SHOULD_BE_EQUAL";
@@ -144,13 +143,17 @@ class TitlesCheck {
         console.error("Last text block is null");
       } else {
         const loc = this.lastTextBlock.loc;
-        // console.log(`${value.toUpperCase()} inside TEXT BLOCK: ${loc.start.line}...${loc.end.line}`);
+        console.log(`${value.toUpperCase()} inside TEXT BLOCK: ${loc.start.line}...${loc.end.line}`);
 
-        this.titles.push({
-          title: value,
-          location: loc,
-          depth: depth
-        });
+        const contains = this.titles.find((e) => { return e.location === loc }) != null;
+
+        if (!contains) {
+          this.titles.push({
+            title: value,
+            location: loc,
+            depth: depth
+          });
+        }
       }
     }
   }
@@ -251,30 +254,8 @@ function lint(jsonString) {
 globalThis.lint = lint;
 //globalThis.reset = reset; // для локальных тестов
 //
-const validTextSizesString = `{
-    "block": "warning",
-    "content": [
-        {
-            "block": "placeholder",
-            "mods": { "size": "m" }
-        },
-        {
-            "elem": "content",
-            "content": [
-                {
-                    "block": "text",
-                    "mods": { "size": "m" }
-                },
-                {
-                    "block": "text",
-                    "mods": { "size": "m" }
-                }
-            ]
-        }
-    ]
-}`;
 
-const invalidTextSizesString = `{
+const json = `{
     "block": "warning",
     "content": [
         {
@@ -291,10 +272,14 @@ const invalidTextSizesString = `{
                 {
                     "block": "text",
                     "mods": { "size": "l" }
+                },
+                {
+                    "block": "text",
+                    "mods": { "type": "h1" }
                 }
             ]
         }
     ]
 }`;
 //
-//lint(validTextSizesString);//
+//lint(json);//
