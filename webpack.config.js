@@ -6,7 +6,6 @@ module.exports = {
     filename: 'linter.js'
   },
   mode: 'development',
-  devtool: 'source-map',
   module: {
     rules: [
       {
