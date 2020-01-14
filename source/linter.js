@@ -1,4 +1,5 @@
-import jsonToAst from 'json-to-ast';
+//import jsonToAst from 'json-to-ast';
+const jsonToAst = require("json-to-ast");
 
 const ERROR_TEXT_SIZES_SHOULD_BE_EQUAL = "WARNING.TEXT_SIZES_SHOULD_BE_EQUAL";
 const ERROR_TEXT_NO_SIZE_VALUE = "WARNING.TEXT_NO_SIZE_VALUE";
@@ -49,7 +50,7 @@ class WarningCheck {
     this.refSize = null;
     this.location = null;
     this.buttonEnabled = false;
-    this.sizes = ['xxxs', 'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl', 'xxxxl', 'xxxxxl'];
+    this.sizes = ["xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl", "xxxxl", "xxxxxl"];
   }
 
   process(parent, node) {
@@ -158,8 +159,7 @@ class TitlesCheck {
     const arrayH1 = this.titles.filter(element => element.title === "h1");
 
     if (arrayH1.length === 0) {
-      console.error(`No H1`);
-      // throw new Error(`No H1`);
+      console.error("No H1");
     } else {
       for (let i = 1; i < arrayH1.length; i++) {
         pushError(SEVERAL_H1, "Can't be several h1.", arrayH1[i].location);
@@ -176,11 +176,11 @@ class TitlesCheck {
       const currDepth = this.titles[i].depth;
 
       if (prevDepth >= currDepth) {
-        if (prevTitle === 'h2' && currTitle === 'h1') {
+        if (prevTitle === "h2" && currTitle === "h1") {
           pushError(INVALID_H2_POSITION, "H2 should be after H1", prevLocation);
-        } else if (prevTitle === 'h3' && currTitle === 'h2') {
+        } else if (prevTitle === "h3" && currTitle === "h2") {
           pushError(INVALID_H3_POSITION, "H3 should be after H2", prevLocation);
-        } else if (prevTitle === 'h3' && currTitle === 'h1') {
+        } else if (prevTitle === "h3" && currTitle === "h1") {
           pushError(INVALID_H3_POSITION, "H3 should be after H1", prevLocation);
         }
       }
@@ -188,9 +188,16 @@ class TitlesCheck {
   }
 }
 
-const warningCheck = new WarningCheck();
-const titlesCheck = new TitlesCheck();
+let warningCheck = new WarningCheck();
+let titlesCheck = new TitlesCheck();
 let depth = 0;
+
+function reset() {
+  console.log("Reset global variables");
+  warningCheck = new WarningCheck();
+  titlesCheck = new TitlesCheck();
+  depth = 0;
+}
 
 function traverse(node) {
   //console.log(`-> ${depth}`);
@@ -232,14 +239,62 @@ function traverse(node) {
   //console.log(`<- ${depth}`);
 }
 
-//globalThis.lint = function(jsonString) {
-export function lint(jsonString) {
+//export function lint(jsonString) {
+function lint(jsonString) {
   const ast = jsonToAst(jsonString);
   traverse(ast);
   titlesCheck.onComplete();
-  console.log('errors: ', errors);
+  console.log("errors: ", errors);
   return errors;
 };
 
-//globalThis.lint(); //
 globalThis.lint = lint;
+globalThis.reset = reset;
+//
+const validTextSizesString = `{
+    "block": "warning",
+    "content": [
+        {
+            "block": "placeholder",
+            "mods": { "size": "m" }
+        },
+        {
+            "elem": "content",
+            "content": [
+                {
+                    "block": "text",
+                    "mods": { "size": "m" }
+                },
+                {
+                    "block": "text",
+                    "mods": { "size": "m" }
+                }
+            ]
+        }
+    ]
+}`;
+
+const invalidTextSizesString = `{
+    "block": "warning",
+    "content": [
+        {
+            "block": "placeholder",
+            "mods": { "size": "m" }
+        },
+        {
+            "elem": "content",
+            "content": [
+                {
+                    "block": "text",
+                    "mods": { "size": "m" }
+                },
+                {
+                    "block": "text",
+                    "mods": { "size": "l" }
+                }
+            ]
+        }
+    ]
+}`;
+//
+//lint(validTextSizesString);//
