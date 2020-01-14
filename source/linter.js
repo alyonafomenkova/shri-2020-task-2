@@ -232,11 +232,14 @@ function traverse(node) {
   //console.log(`<- ${depth}`);
 }
 
-globalThis.lint = function(jsonString) {
-//export function lint(jsonString) {
+//globalThis.lint = function(jsonString) {
+export function lint(jsonString) {
   const ast = jsonToAst(jsonString);
   traverse(ast);
   titlesCheck.onComplete();
   console.log('errors: ', errors);
   return errors;
-}
+};
+
+//globalThis.lint(); //
+globalThis.lint = lint;
