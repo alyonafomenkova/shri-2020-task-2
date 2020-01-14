@@ -85,6 +85,27 @@ class WarningCheck {
         }
       }
     }
+    // placeholder rule
+    if (this.inProgress && node.value.value === "placeholder") {
+      this.location = parent.loc;
+      console.log('placeholder внутри warning найден тут: ', this.location);
+      this.buttonEnabled = true;
+      const mods = parent.children.find((e) => { return e.key.value === "mods" });
+      if (mods) {
+        const size = mods.value.children.find((e) => { return e.key.value === "size" });
+        if (!["s", "m", "l"].includes(size.value.value)) {
+          pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", this.location);
+        }
+      } else {
+        pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", this.location);
+      }
+    }
+    // new button size rule! :)
+    // if (this.inProgress && node.value.value === "button") {
+    //   this.location = parent.loc;
+    //   console.log('Кнопка внутри warning найдена тут: ', this.location);
+    // }
+
     // button size rule
     // if (this.inProgress && node.value.value === "button") {
     //   this.location = parent.loc;
@@ -106,20 +127,7 @@ class WarningCheck {
     //       }// end else
     //   }//end else
     // }
-    // // placeholder rule
-    // if (this.inProgress && node.value.value === "placeholder") {
-    //   this.location = parent.loc;
-    //   this.buttonEnabled = true;
-    //   const mods = parent.children.find((e) => { return e.key.value === "mods" });
-    //   if (mods) {
-    //     const size = mods.value.children.find((e) => { return e.key.value === "size" });
-    //     if (!["s", "m", "l"].includes(size.value.value)) {
-    //       pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", this.location);
-    //     }
-    //   } else {
-    //     pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", this.location);
-    //   }
-    // }
+
   }
 }
 
@@ -258,28 +266,45 @@ globalThis.lint = lint;
 const json = `{
     "block": "warning",
     "content": [
-        {
-            "block": "placeholder",
-            "mods": { "size": "m" }
-        },
-        {
-            "elem": "content",
-            "content": [
-                {
-                    "block": "text",
-                    "mods": { "size": "m" }
-                },
-                {
-                    "block": "text",
-                    "mods": { "size": "l" }
-                },
-                {
-                    "block": "text",
-                    "mods": { "type": "h1" }
-                }
-            ]
-        }
+        { "block": "placeholder", "mods": { "size": "m" } },
+        { "block": "button", "mods": { "size": "m" } }
     ]
 }`;
-//
-//lint(json);//
+
+const wrong = `{
+    "block": "warning",
+    "content": [
+        { "block": "button", "mods": { "size": "m" } },
+        { "block": "placeholder", "mods": { "size": "m" } }
+    ]
+}`;
+// s, m, l
+const placeholser1 = `{
+    "block": "warning",
+    "content": [
+        { "block": "placeholder", "mods": { "size": "s" } },
+        { "block": "button", "mods": { "size": "m" } }
+    ]
+}`;
+const placeholser2 = `{
+    "block": "warning",
+    "content": [
+        { "block": "placeholder", "mods": { "size": "m" } },
+        { "block": "button", "mods": { "size": "m" } }
+    ]
+}`;
+const placeholser3 = `{
+    "block": "warning",
+    "content": [
+        { "block": "placeholder", "mods": { "size": "l" } },
+        { "block": "button", "mods": { "size": "m" } }
+    ]
+}`;
+const placeholser4 = `{
+    "block": "warning",
+    "content": [
+        { "block": "placeholder", "mods": { "size": "ss" } },
+        { "block": "button", "mods": { "size": "m" } }
+    ]
+}`;
+//lint(placeholser4);//
