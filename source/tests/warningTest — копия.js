@@ -1,4 +1,5 @@
-import {lint} from './linter.js';
+//import { lint } from './linter.js';
+const { expect } = require("chai");
 const jsonString = `{
     "block": "page",
     "mix": [
@@ -2650,3 +2651,4 @@ const jsonString = `{
 //        }
 //      ]
 //  }`);
+console.log(`this is test`);
