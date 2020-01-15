@@ -49,8 +49,6 @@ class WarningCheck {
     this.location = null;
     this.lastPlaceholderBlock = null;//
     this.buttonEnabled = false;//
-    this.buttonLocation = null;
-    this.sizes = ["xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl", "xxxxl", "xxxxxl"];
   }
 
   checkTextSizes(parent) {
@@ -73,6 +71,31 @@ class WarningCheck {
     }
   }
 
+  checkButtonSize(parent) {
+    this.location = parent.loc;
+    console.log(`button внутри warning найден тут: `, this.location); //
+    const sizes = ["xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl", "xxxxl", "xxxxxl"];
+    const mods = parent.children.find((e) => { return e.key.value === "mods" });
+    const button = mods.value.children.find((e) => { return e.key.value === "size" });
+    const buttonSize = button.value.value;
+
+    if (this.refSize === null) {
+      console.error(`No reference size.`);
+      return;
+    }
+
+    if (!containsSizes(sizes, buttonSize)) {
+      console.error(`Button can't be this size.`);
+    } else {
+      const refButtonSize = sizes[sizes.findIndex((size) => size === this.refSize) + 1];
+
+      if (buttonSize !== refButtonSize) {
+        console.log(`неверный размер! Должен быть refButtonSize: ${refButtonSize}`); //
+        pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location);
+      }
+    }
+  }
+
   process(parent, node) {
     const key = node.key.value;
     const value = node.value.value;
@@ -89,6 +112,8 @@ class WarningCheck {
       }
     } else if (this.inProgress && value === "text") {
       this.checkTextSizes(parent);
+    } else if (!this.inProgress && value === "button") {
+      this.checkButtonSize(parent);
     }
 
     // // // new button size rule
@@ -290,8 +315,8 @@ const a = `{
           {
             "elem": "content",
             "content": [
-              { "block": "button", "mods": { "size": "m" } },
-              { "block": "placeholder", "mods": { "size": "s" } }
+              { "block": "text", "mods": { "size": "xl" } },
+              { "block": "button", "mods": { "size": "l" } }
             ]
           }
         ]
