@@ -79,17 +79,12 @@ class WarningCheck {
     const button = mods.value.children.find((e) => { return e.key.value === "size" });
     const buttonSize = button.value.value;
 
-    if (this.refSize === null) {
-      console.error(`No reference size.`);
-      return;
-    }
-
     if (!containsSizes(sizes, buttonSize)) {
       console.error(`Button can't be this size.`);
     } else {
       const refButtonSize = sizes[sizes.findIndex((size) => size === this.refSize) + 1];
 
-      if (buttonSize !== refButtonSize) {
+      if (this.refSize !== null && buttonSize !== refButtonSize) {
         console.log(`неверный размер! Должен быть refButtonSize: ${refButtonSize}`); //
         pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location);
       }
