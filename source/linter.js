@@ -109,9 +109,9 @@ class WarningCheck {
       this.checkTextSizes(parent);
     }
 
-    if (!this.inProgress && value === "button") {
-      this.checkButtonSize(parent);
-    }
+    // if (!this.inProgress && value === "button") {
+    //   this.checkButtonSize(parent);
+    // }
 
 
 
