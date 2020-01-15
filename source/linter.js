@@ -86,30 +86,59 @@ class WarningCheck {
         }
       }
     }
-    //placeholder rule
-    if (this.inProgress && node.value.value === "placeholder") {
-      this.lastPlaceholderBlock = parent; //
-      //this.location = parent.loc;
-      //console.log('placeholder внутри warning найден тут: ', this.lastPlaceholderBlock.loc);
-      this.buttonEnabled = true;
-      //
-      if (this.lastPlaceholderBlock == null) {
-        console.error("Last placeholder block is null");
-      } else {
-        const loc = this.lastPlaceholderBlock.loc;
-        //console.log(`${node.value.value.toUpperCase()} inside PLACEHOLDER BLOCK: ${loc.start.line}...${loc.end.line}`);
-        const mods = parent.children.find((e) => { return e.key.value === "mods" });
-        if (mods) {
-          const size = mods.value.children.find((e) => { return e.key.value === "size" });
-          if (!["s", "m", "l"].includes(size.value.value)) {
-            pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", loc);
-          }
+
+    // new button size rule
+    if (!this.inProgress && this.refSize !== null && node.value.value === "button") {
+      console.log(`button in warning find!`);
+      console.log(` this.refSize: `,  this.refSize);
+      this.location = parent.loc;
+      const mods = parent.children.find((e) => { return e.key.value === "mods" });
+    //   //
+    //   if (!this.buttonEnabled) {
+    //     pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", this.location);/////
+    //   } else {//start else
+        const button = mods.value.children.find((e) => { return e.key.value === "size" });
+        const buttonSize = button.value.value;
+        if (!contains(this.sizes, buttonSize)) {
+          //pushError(INVALID_BUTTON_SIZE, "Button can't be this size.", this.location);
+          console.error(`Button can't be this size.`);
         } else {
-          pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", loc);
-        }
-      }
-      //
+          const refButtonSize = this.sizes[this.sizes.findIndex((size) => size === this.refSize) + 1];
+          if (buttonSize !== refButtonSize) {
+            console.log(`неверный размер! Должен быть refButtonSize: ${refButtonSize}`);
+            pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location);
+          }
+          }// end else
+    //   }//end else
     }
+
+
+
+
+    // //placeholder rule
+    // if (this.inProgress && node.value.value === "placeholder") {
+    //   this.lastPlaceholderBlock = parent; //
+    //   //this.location = parent.loc;
+    //   //console.log('placeholder внутри warning найден тут: ', this.lastPlaceholderBlock.loc);
+    //   this.buttonEnabled = true;
+    //   //
+    //   if (this.lastPlaceholderBlock == null) {
+    //     console.error("Last placeholder block is null");
+    //   } else {
+    //     const loc = this.lastPlaceholderBlock.loc;
+    //     //console.log(`${node.value.value.toUpperCase()} inside PLACEHOLDER BLOCK: ${loc.start.line}...${loc.end.line}`);
+    //     const mods = parent.children.find((e) => { return e.key.value === "mods" });
+    //     if (mods) {
+    //       const size = mods.value.children.find((e) => { return e.key.value === "size" });
+    //       if (!["s", "m", "l"].includes(size.value.value)) {
+    //         pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", loc);
+    //       }
+    //     } else {
+    //       pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", loc);
+    //     }
+    //   }
+    //   //
+    // }
 
     // button size rule
     // if (this.inProgress && node.value.value === "button") {
@@ -267,15 +296,4 @@ function lint(jsonString) {
 globalThis.lint = lint;
 //globalThis.reset = reset; // для локальных тестов
 
-const invalidPlaceholderSize = `{
-    "block": "warning",
-    "content": [
-        { "block": "placeholder", "mods": { "size": "xs" } },
-        { "block": "button", "mods": { "size": "m" } },
-        { "block": "text", "mods": { "size": "m" } },
-        { "block": "text", "mods": { "size": "l" } }
-    ]
-}`;
-
-
-//lint(invalidPlaceholderSize);//
+//lint(invalidButtonSize);//
