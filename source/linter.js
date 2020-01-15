@@ -107,9 +107,13 @@ class WarningCheck {
       }
     } else if (this.inProgress && value === "text") {
       this.checkTextSizes(parent);
-    } else if (!this.inProgress && value === "button") {
+    }
+
+    if (!this.inProgress && value === "button") {
       this.checkButtonSize(parent);
     }
+
+
 
     // // // new button size rule
     // if (!this.inProgress && node.value.value === "button") {
