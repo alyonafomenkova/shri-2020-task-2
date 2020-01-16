@@ -67,7 +67,8 @@ class WarningCheck {
           pushError(ERROR_TEXT_SIZES_SHOULD_BE_EQUAL, "Text sizes inside 'warning' block are not equal", this.location);
         }
       } else {
-        pushError(ERROR_TEXT_NO_SIZE_VALUE, "Text block with 'mods' has no 'size' block", this.location);
+        console.error("Text block with 'mods' has no 'size' block");
+        //pushError(ERROR_TEXT_NO_SIZE_VALUE, "Text block with 'mods' has no 'size' block", this.location);
       }
     }
   }
@@ -339,29 +340,15 @@ const interestingCase = `{
   ]
 }`;
 
-const valid = `{ 
-  "block": "warning", 
-  "content": [ 
-      { "block": "text", "mods": { "size": "l" } }, 
-      { "block": "wrapper", 
-        "content": [ 
-          { "block": "text", "mods": { "size": "xl" } } 
-        ] 
-      } 
-  ] 
-}`;
-
-const size = `{
-        "block": "warning",
-        "content": [
-          {
-            "elem": "content",
-            "content": [
-              { "block": "button", "mods": { "size": "xxxxxxl" } },
-              { "block": "text", "mods": { "size": "xxxxxl" } }
-            ]
-          }
-        ]
-      }`;
+const size = `[
+  {
+      "block": "text",
+      "mods": { "type": "h3" }
+  },
+  {
+      "block": "text",
+      "mods": { "type": "h2" }
+  }
+]`;
 
 //lint(size); //
