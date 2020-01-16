@@ -1,7 +1,6 @@
 const jsonToAst = require("json-to-ast");
 
 const ERROR_TEXT_SIZES_SHOULD_BE_EQUAL = "WARNING.TEXT_SIZES_SHOULD_BE_EQUAL";
-const ERROR_TEXT_NO_SIZE_VALUE = "WARNING.TEXT_NO_SIZE_VALUE";
 const INVALID_BUTTON_SIZE = "WARNING.INVALID_BUTTON_SIZE";
 const INVALID_PLACEHOLDER_SIZE = "WARNING.INVALID_PLACEHOLDER_SIZE";
 const INVALID_BUTTON_POSITION = "WARNING.INVALID_BUTTON_POSITION";
@@ -68,7 +67,6 @@ class WarningCheck {
         }
       } else {
         console.error("Text block with 'mods' has no 'size' block");
-        //pushError(ERROR_TEXT_NO_SIZE_VALUE, "Text block with 'mods' has no 'size' block", this.location);
       }
     }
   }
@@ -99,13 +97,13 @@ class WarningCheck {
       const currLocation = this.buttonPlaceholderArray[i].location;
       const currDepth = this.buttonPlaceholderArray[i].depth;
 
-      if (prevDepth >= currDepth) {
+      //if (prevDepth >= currDepth) {
         if (prevTitle === "button" && currTitle === "placeholder") {
           if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
             pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", prevLocation);
           }
         }
-      }
+      //}
     }
   }
 
@@ -224,21 +222,19 @@ class TitlesCheck {
       const currLocation = this.titles[i].location;
       const currDepth = this.titles[i].depth;
 
-      if (prevDepth >= currDepth) {//
+      //if (prevDepth >= currDepth) {//
         if (prevTitle === "h2" && currTitle === "h1") {
-          // (h2End.line < h1Start.line) || (h2End.line === h1Start.line && h2End.column < h1Start.column)
-          //if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
+          if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
             pushError(INVALID_H2_POSITION, "H2 should be after H1.", prevLocation);
-          //}
+          }
         } else if (prevTitle === "h3" && currTitle === "h2") {
-          //(h3End.line < h2Start.line) || (h3End.line === h2Start.line && h3End.column < h2Start.column)
-          //if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
+          if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
             pushError(INVALID_H3_POSITION, "H3 should be after H2.", prevLocation);
-          //}
+          }
         } else if (prevTitle === "h3" && currTitle === "h1") {
           pushError(INVALID_H3_POSITION, "H3 should be after H2.", prevLocation);
         }
-      }//
+      //}//
     }
   }
 }
@@ -343,11 +339,15 @@ const interestingCase = `{
 const size = `[
   {
       "block": "text",
-      "mods": { "type": "h3" }
-  },
-  {
-      "block": "text",
       "mods": { "type": "h2" }
+  },
+  { 
+      "block": "text",
+      "elem": "word",
+      "content": {
+          "block": "text",
+          "mods": { "type": "h1" }
+      }
   }
 ]`;
 
