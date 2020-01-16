@@ -298,102 +298,102 @@ describe("<<<<<     CHECKING WARNING     >>>>>", () => {
     });
   });
 
-  // describe("    Checking button position  ", () => {
-  //     it("Button positions_1. Button has valid position (after placeholder).", () => {
-  //       const validButtonPosition = `{
-  //         "block": "warning",
-  //         "content": [
-  //           {
-  //             "elem": "content",
-  //             "content": [
-  //               { "block": "placeholder", "mods": { "size": "s" } },
-  //               { "block": "button", "mods": { "size": "m" } }
-  //             ]
-  //           }
-  //         ]
-  //       }`;
-  //       globalThis.reset();
-  //       expect(globalThis.lint(validButtonPosition)).to.have.lengthOf(0);
-  //     });
-  //
-  //     it("Button positions_2. Button has invalid position (before placeholder).", () => {
-  //       globalThis.reset();
-  //       const invalidButtonPosition = `{
-  //         "block": "warning",
-  //         "content": [
-  //           {
-  //             "elem": "content",
-  //             "content": [
-  //               { "block": "button", "mods": { "size": "m" } },
-  //               { "block": "placeholder", "mods": { "size": "s" } }
-  //             ]
-  //           }
-  //         ]
-  //       }`;
-  //
-  //       const errors = globalThis.lint(invalidButtonPosition);
-  //       expect(errors).to.have.lengthOf(1);
-  //
-  //       expect(errors[0]).to.deep.equal({
-  //         code: "WARNING.INVALID_BUTTON_POSITION",
-  //         error: "Button can't be in front of the placeholder.",
-  //         location: {start: {column: 17, line: 7}, end: {column: 63, line: 7}}
-  //       });
-  //     });
-  //
-  //     it("Button positions_3. Button has invalid position (between 2 placeholders).", () => {
-  //       globalThis.reset();
-  //       const invalidButtonPosition = `{
-  //         "block": "warning",
-  //         "content": [
-  //           {
-  //             "elem": "content",
-  //             "content": [
-  //               { "block": "placeholder", "mods": { "size": "s" } },
-  //               { "block": "button", "mods": { "size": "m" } },
-  //               { "block": "placeholder", "mods": { "size": "s" } }
-  //             ]
-  //           }
-  //         ]
-  //       }`;
-  //
-  //       const errors = globalThis.lint(invalidButtonPosition);
-  //
-  //       expect(errors).to.have.lengthOf(1);
-  //       expect(errors[0]).to.deep.equal({
-  //         code: "WARNING.INVALID_BUTTON_POSITION",
-  //         error: "Button can't be in front of the placeholder.",
-  //         location: {start: {column: 17, line: 8}, end: {column: 63, line: 8}}
-  //       });
-  //     });
-  //
-  //     it("Button positions_4. Button has invalid position (before and nested placeholder).", () => {
-  //       globalThis.reset();
-  //       const invalidButtonPosition = `{
-  //         "block": "warning",
-  //         "content": [
-  //           {
-  //             "elem": "content",
-  //             "content": [
-  //               { "block": "section", "content": [
-  //                 { "block": "button", "mods": { "size": "m" } }
-  //               ]},
-  //               { "block": "placeholder", "mods": { "size": "s" } }
-  //             ]
-  //           }
-  //         ]
-  //       }`;
-  //
-  //       const errors = globalThis.lint(invalidButtonPosition);
-  //
-  //       expect(errors).to.have.lengthOf(1);
-  //       expect(errors[0]).to.deep.equal({
-  //         code: "WARNING.INVALID_BUTTON_POSITION",
-  //         error: "Button can't be in front of the placeholder.",
-  //         location: {start: {column: 19, line: 8}, end: {column: 65, line: 8}}
-  //       });
-  //     });
-  //   });
+  describe("    Checking button position  ", () => {
+      it("Button positions_1. Button has valid position (after placeholder).", () => {
+        const validButtonPosition = `{
+          "block": "warning",
+          "content": [
+            {
+              "elem": "content",
+              "content": [
+                { "block": "placeholder", "mods": { "size": "s" } },
+                { "block": "button", "mods": { "size": "m" } }
+              ]
+            }
+          ]
+        }`;
+        globalThis.reset();
+        expect(globalThis.lint(validButtonPosition)).to.have.lengthOf(0);
+      });
+
+      it("Button positions_2. Button has invalid position (before placeholder).", () => {
+        globalThis.reset();
+        const invalidButtonPosition = `{
+          "block": "warning",
+          "content": [
+            {
+              "elem": "content",
+              "content": [
+                { "block": "button", "mods": { "size": "m" } },
+                { "block": "placeholder", "mods": { "size": "s" } }
+              ]
+            }
+          ]
+        }`;
+
+        const errors = globalThis.lint(invalidButtonPosition);
+        expect(errors).to.have.lengthOf(1);
+
+        expect(errors[0]).to.deep.equal({
+          code: "WARNING.INVALID_BUTTON_POSITION",
+          error: "Button can't be in front of the placeholder.",
+          location: {start: {column: 17, line: 7}, end: {column: 63, line: 7}}
+        });
+      });
+
+      it("Button positions_3. Button has invalid position (between 2 placeholders).", () => {
+        globalThis.reset();
+        const invalidButtonPosition = `{
+          "block": "warning",
+          "content": [
+            {
+              "elem": "content",
+              "content": [
+                { "block": "placeholder", "mods": { "size": "s" } },
+                { "block": "button", "mods": { "size": "m" } },
+                { "block": "placeholder", "mods": { "size": "s" } }
+              ]
+            }
+          ]
+        }`;
+
+        const errors = globalThis.lint(invalidButtonPosition);
+
+        expect(errors).to.have.lengthOf(1);
+        expect(errors[0]).to.deep.equal({
+          code: "WARNING.INVALID_BUTTON_POSITION",
+          error: "Button can't be in front of the placeholder.",
+          location: {start: {column: 17, line: 8}, end: {column: 63, line: 8}}
+        });
+      });
+
+      it("Button positions_4. Button has invalid position (before and nested placeholder).", () => {
+        globalThis.reset();
+        const invalidButtonPosition = `{
+          "block": "warning",
+          "content": [
+            {
+              "elem": "content",
+              "content": [
+                { "block": "section", "content": [
+                  { "block": "button", "mods": { "size": "m" } }
+                ]},
+                { "block": "placeholder", "mods": { "size": "s" } }
+              ]
+            }
+          ]
+        }`;
+
+        const errors = globalThis.lint(invalidButtonPosition);
+
+        expect(errors).to.have.lengthOf(1);
+        expect(errors[0]).to.deep.equal({
+          code: "WARNING.INVALID_BUTTON_POSITION",
+          error: "Button can't be in front of the placeholder.",
+          location: {start: {column: 19, line: 8}, end: {column: 65, line: 8}}
+        });
+      });
+    });
 
   describe("    Checking placeholder sizes  ", () => {
     it("Placeholder sizes_1. Placeholder has valid size: s.", () => {

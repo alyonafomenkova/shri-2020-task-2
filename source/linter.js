@@ -50,7 +50,6 @@ class WarningCheck {
     this.buttonPlaceholderArray = [];
     this.placeholderLocation = null;
     this.buttonLocation = null;
-    //this.isButtonEnable = false;
   }
 
   checkTextSizes(parent) {
@@ -83,6 +82,8 @@ class WarningCheck {
 
       if (!containsSizes(sizes, buttonSize)) {
         console.error(`Button can't be this size.`);
+        // Возможно тут тоже стоит сделать pushError
+        // pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.buttonLocation);
       } else {
         const refButtonSize = sizes[sizes.findIndex((size) => size === this.refSize) + 1];
 
@@ -92,35 +93,49 @@ class WarningCheck {
         }
       }
     });
-
-
-
-    // const mods = parent.children.find((e) => { return e.key.value === "mods" });
-    // const button = mods.value.children.find((e) => { return e.key.value === "size" });
-    // const buttonSize = button.value.value;
-    //
-    // if (!containsSizes(sizes, buttonSize)) {
-    //   console.error(`Button can't be this size.`);
-    //   pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location); //
-    // } else {
-    //   const refButtonSize = sizes[sizes.findIndex((size) => size === this.refSize) + 1];
-    //
-    //   if (this.refSize !== null && buttonSize !== refButtonSize) {
-    //     console.log(`неверный размер! Должен быть refButtonSize: ${refButtonSize}`); //
-    //     pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location);
-    //   }
-    // }
   }
 
-  checkButtonPosition(parent) {
-    console.log("this.buttons: ", this.buttons);
-    this.buttonLocation = parent.loc;
-    console.log('button внутри warning найден тут: ', this.buttonLocation); //
-    const isBtnBeforPlaceholder = ((this.placeholderLocation === null) || (this.buttonLocation.end.line < this.placeholderLocation.start.line)) || (this.buttonLocation.end.line === this.placeholderLocation.start.line && this.buttonLocation.end.column < this.placeholderLocation.start.column);
-    if (isBtnBeforPlaceholder) {
-      console.log(`неверное положение кнопки`); //
-      pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", this.buttonLocation);
+  checkButtonPosition() {
+    for (let i = 1; i < this.buttonPlaceholderArray.length; i++) {
+      const prevTitle = this.buttonPlaceholderArray[i - 1].title;
+      const prevLocation = this.buttonPlaceholderArray[i - 1].location;
+
+      const currTitle = this.buttonPlaceholderArray[i].title;
+      const currLocation = this.buttonPlaceholderArray[i].location;
+
+      //const isBtnBeforePlaceholder = ((this.placeholderLocation === null) || (this.buttonLocation.end.line < this.placeholderLocation.start.line)) || (this.buttonLocation.end.line === this.placeholderLocation.start.line && this.buttonLocation.end.column < this.placeholderLocation.start.column);
+
+      if(prevTitle === "button" && currTitle === "placeholder") {
+        pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", prevLocation);
+      }
     }
+    // for (let i = 1; i < this.titles.length; i++) {
+    //   const prevTitle = this.titles[i - 1].title;
+    //   const prevLocation = this.titles[i - 1].location;
+    //   const prevDepth = this.titles[i - 1].depth;
+    //
+    //   const currTitle = this.titles[i].title;
+    //   const currLocation = this.titles[i].location;
+    //   const currDepth = this.titles[i].depth;
+    //
+    //   if (prevDepth >= currDepth) {
+    //     if (prevTitle === "h2" && currTitle === "h1") {
+    //       pushError(INVALID_H2_POSITION, "H2 should be after H1", prevLocation);
+    //     } else if (prevTitle === "h3" && currTitle === "h2") {
+    //       pushError(INVALID_H3_POSITION, "H3 should be after H2", prevLocation);
+    //     } else if (prevTitle === "h3" && currTitle === "h1") {
+    //       pushError(INVALID_H3_POSITION, "H3 should be after H1", prevLocation);
+    //     }
+    //   }
+    // }
+    // console.log("this.buttons: ", this.buttons);
+    // this.buttonLocation = parent.loc;
+    // console.log('button внутри warning найден тут: ', this.buttonLocation); //
+    // const isBtnBeforPlaceholder = ((this.placeholderLocation === null) || (this.buttonLocation.end.line < this.placeholderLocation.start.line)) || (this.buttonLocation.end.line === this.placeholderLocation.start.line && this.buttonLocation.end.column < this.placeholderLocation.start.column);
+    // if (isBtnBeforPlaceholder) {
+    //   console.log(`неверное положение кнопки`); //
+    //   pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", this.buttonLocation);
+    // }
   }
 
   checkPlaceholderSize() {
@@ -177,6 +192,7 @@ class WarningCheck {
   onComplete() {
     console.log(`warning ONCOMLEATE`);
     this.checkButtonSize();
+    this.checkButtonPosition();
     this.checkPlaceholderSize();
   }
 }
