@@ -81,6 +81,7 @@ class WarningCheck {
 
     if (!containsSizes(sizes, buttonSize)) {
       console.error(`Button can't be this size.`);
+      pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location); //
     } else {
       const refButtonSize = sizes[sizes.findIndex((size) => size === this.refSize) + 1];
 
