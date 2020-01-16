@@ -99,15 +99,17 @@ class WarningCheck {
     for (let i = 1; i < this.buttonPlaceholderArray.length; i++) {
       const prevTitle = this.buttonPlaceholderArray[i - 1].title;
       const prevLocation = this.buttonPlaceholderArray[i - 1].location;
+      const prevDepth = this.buttonPlaceholderArray[i - 1].depth;
 
       const currTitle = this.buttonPlaceholderArray[i].title;
       const currLocation = this.buttonPlaceholderArray[i].location;
+      const currDepth = this.buttonPlaceholderArray[i].depth;
 
-      //const isBtnBeforePlaceholder = ((this.placeholderLocation === null) || (this.buttonLocation.end.line < this.placeholderLocation.start.line)) || (this.buttonLocation.end.line === this.placeholderLocation.start.line && this.buttonLocation.end.column < this.placeholderLocation.start.column);
-
-      if (prevTitle === "button" && currTitle === "placeholder") {
-        if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
-          pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", prevLocation);
+      if (prevDepth >= currDepth) {
+        if (prevTitle === "button" && currTitle === "placeholder") {
+          if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
+            pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", prevLocation);
+          }
         }
       }
     }
@@ -125,7 +127,7 @@ class WarningCheck {
     });
   }
 
-  process(parent, node) {
+  process(parent, node, depth) {
     const key = node.key.value;
     const value = node.value.value;
 
@@ -149,7 +151,8 @@ class WarningCheck {
       this.buttonPlaceholderArray.push({
         mods: parent.children.find((e) => { return e.key.value === "mods" }),
         title: node.value.value,
-        location: this.placeholderLocation
+        location: this.placeholderLocation,
+        depth: depth
       });
     }
 
@@ -158,8 +161,9 @@ class WarningCheck {
       this.buttonPlaceholderArray.push({
         mods: parent.children.find((e) => { return e.key.value === "mods" }),
         title: node.value.value,
-        location: this.buttonLocation
-      });//
+        location: this.buttonLocation,
+        depth: depth
+      });
       //this.checkButtonPosition(parent);
     }
   }
@@ -227,21 +231,21 @@ class TitlesCheck {
       const currLocation = this.titles[i].location;
       const currDepth = this.titles[i].depth;
 
-      //if (prevDepth >= currDepth) {//
+      if (prevDepth >= currDepth) {//
         if (prevTitle === "h2" && currTitle === "h1") {
           // (h2End.line < h1Start.line) || (h2End.line === h1Start.line && h2End.column < h1Start.column)
-          if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
-            pushError(INVALID_H2_POSITION, "H2 should be after H1", prevLocation);
-          }
+          //if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
+            pushError(INVALID_H2_POSITION, "H2 should be after H1.", prevLocation);
+          //}
         } else if (prevTitle === "h3" && currTitle === "h2") {
           //(h3End.line < h2Start.line) || (h3End.line === h2Start.line && h3End.column < h2Start.column)
-          if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
-            pushError(INVALID_H3_POSITION, "H3 should be after H2", prevLocation);
-          }
+          //if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
+            pushError(INVALID_H3_POSITION, "H3 should be after H2.", prevLocation);
+          //}
         } else if (prevTitle === "h3" && currTitle === "h1") {
-          pushError(INVALID_H3_POSITION, "H3 should be after H2", prevLocation);
+          pushError(INVALID_H3_POSITION, "H3 should be after H2.", prevLocation);
         }
-      //}//
+      }//
     }
   }
 }
@@ -265,7 +269,7 @@ function traverse(node) {
     const type = node.value.type;
 
     if (isLiteralPropertyType(type)) {
-      warningCheck.process(parent, node);
+      warningCheck.process(parent, node, depth);
       titlesCheck.process(parent, node, depth);
 
     } else if (isArrayPropertyType(type)) {
