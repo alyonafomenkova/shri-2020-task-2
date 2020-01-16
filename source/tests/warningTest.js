@@ -117,189 +117,189 @@ describe("<<<<<     CHECKING WARNING     >>>>>", () => {
     });
   });
 
-  // describe("    Checking button sizes  ", () => {
-  //   it("TEST_5. Button has valid size (button after text).", () => {
-  //     const validButtonSize = `{
-  //       "block": "warning",
-  //       "content": [
-  //         {
-  //           "elem": "content",
-  //           "content": [
-  //             { "block": "text", "mods": { "size": "l" } },
-  //             { "block": "button", "mods": { "size": "xl" } }
-  //           ]
-  //         }
-  //       ]
-  //     }`;
-  //     globalThis.reset();
-  //     expect(globalThis.lint(validButtonSize)).to.have.lengthOf(0);
-  //   });
-  //
-  //   it("TEST_6. Button has valid size (button before text).", () => {
-  //     const validButtonSize = `{
-  //       "block": "warning",
-  //       "content": [
-  //         {
-  //           "elem": "content",
-  //           "content": [
-  //             { "block": "button", "mods": { "size": "xl" } },
-  //             { "block": "text", "mods": { "size": "l" } }
-  //           ]
-  //         }
-  //       ]
-  //     }`;
-  //     globalThis.reset();
-  //     expect(globalThis.lint(validButtonSize)).to.have.lengthOf(0);
-  //   });
-  //
-  //   it("TEST_7. Text size is undefined.", () => {
-  //     const noTextSize = `{
-  //       "block": "warning",
-  //       "content": [
-  //         {
-  //           "elem": "content",
-  //           "content": [
-  //             { "block": "button", "mods": { "size": "xl" } }
-  //           ]
-  //         }
-  //       ]
-  //     }`;
-  //     globalThis.reset();
-  //     expect(globalThis.lint(noTextSize)).to.have.lengthOf(0);
-  //   });
-  //
-  //   it("TEST_8. Button has invalid size (button after text).", () => {
-  //     globalThis.reset();
-  //     const invalidButtonSize = `{
-  //       "block": "warning",
-  //       "content": [
-  //         {
-  //           "elem": "content",
-  //           "content": [
-  //             { "block": "text", "mods": { "size": "xl" } },
-  //             { "block": "button", "mods": { "size": "l" } }
-  //           ]
-  //         }
-  //       ]
-  //     }`;
-  //     const errors = globalThis.lint(invalidButtonSize);
-  //
-  //     expect(errors).to.have.lengthOf(1);
-  //     expect(errors[0]).to.deep.equal({
-  //       code: "WARNING.INVALID_BUTTON_SIZE",
-  //       error: "Button sizes inside 'warning' shoud be 1 more.",
-  //       location: {start: {column: 15, line: 8}, end: {column: 61, line: 8}}
-  //     });
-  //   });
-  //
-  //   it("TEST_9. Button has invalid size (button before text).", () => {
-  //     globalThis.reset();
-  //     const invalidButtonSize = `{
-  //       "block": "warning",
-  //       "content": [
-  //         {
-  //           "elem": "content",
-  //           "content": [
-  //             { "block": "button", "mods": { "size": "l" } },
-  //             { "block": "text", "mods": { "size": "xl" } }
-  //           ]
-  //         }
-  //       ]
-  //     }`;
-  //     const errors = globalThis.lint(invalidButtonSize);
-  //
-  //     expect(errors).to.have.lengthOf(1);
-  //     expect(errors[0]).to.deep.equal({
-  //       code: "WARNING.INVALID_BUTTON_SIZE",
-  //       error: "Button sizes inside 'warning' shoud be 1 more.",
-  //       location: {start: {column: 15, line: 7}, end: {column: 61, line: 7}}
-  //     });
-  //   });
-  //
-  //   it("TEST_10. Button has invalid BORDER size (button before text).", () => {
-  //     globalThis.reset();
-  //     const invalidButtonSize = `{
-  //       "block": "warning",
-  //       "content": [
-  //         {
-  //           "elem": "content",
-  //           "content": [
-  //             { "block": "button", "mods": { "size": "xxxxxxl" } },
-  //             { "block": "text", "mods": { "size": "xxxxxl" } }
-  //           ]
-  //         }
-  //       ]
-  //     }`;
-  //     const errors = globalThis.lint(invalidButtonSize);
-  //
-  //     expect(errors).to.have.lengthOf(0);
-  //   });
-  //
-  //   it("TEST_11. Button has invalid BORDER size (button after text).", () => {
-  //     globalThis.reset();
-  //     const invalidButtonSize = `{
-  //       "block": "warning",
-  //       "content": [
-  //         {
-  //           "elem": "content",
-  //           "content": [
-  //             { "block": "text", "mods": { "size": "xxxs" } },
-  //             { "block": "button", "mods": { "size": "xxxs" } }
-  //           ]
-  //         }
-  //       ]
-  //     }`;
-  //     const errors = globalThis.lint(invalidButtonSize);
-  //
-  //     expect(errors).to.have.lengthOf(1);
-  //     expect(errors[0]).to.deep.equal({
-  //       code: "WARNING.INVALID_BUTTON_SIZE",
-  //       error: "Button sizes inside 'warning' shoud be 1 more.",
-  //       location: {start: {column: 15, line: 8}, end: {column: 64, line: 8}}
-  //     });
-  //   });
-  //
-  //   it("TEST_12. Button has invalid size (equal text size) (button after text).", () => {
-  //     globalThis.reset();
-  //     const invalidButtonSize = `{
-  //       "block": "warning",
-  //       "content": [
-  //         {
-  //           "elem": "content",
-  //           "content": [
-  //             { "block": "text", "mods": { "size": "xxxs" } },
-  //             { "block": "button", "mods": { "size": "xxxs" } }
-  //           ]
-  //         }
-  //       ]
-  //     }`;
-  //     const errors = globalThis.lint(invalidButtonSize);
-  //
-  //     expect(errors).to.have.lengthOf(1);
-  //     expect(errors[0]).to.deep.equal({
-  //       code: "WARNING.INVALID_BUTTON_SIZE",
-  //       error: "Button sizes inside 'warning' shoud be 1 more.",
-  //       location: {start: {column: 15, line: 8}, end: {column: 64, line: 8}}
-  //     });
-  //   });
-  //
-  //   it("TEST_13. Button has valid size outside warning.", () => {
-  //     globalThis.reset();
-  //     const validButtonSize = `{
-  //       "block": "test",
-  //       "content": [
-  //         { "block": "text", "mods": { "size": "l" } },
-  //         { "block": "button", "mods": { "size": "xl" } }
-  //       ]
-  //     }`;
-  //     const errors = globalThis.lint(validButtonSize);
-  //
-  //     expect(errors).to.have.lengthOf(0);
-  //   });
-  // });
+  describe("    Checking button sizes  ", () => {
+    it("TEST_5. Button has valid size (button after text).", () => {
+      const validButtonSize = `{
+        "block": "warning",
+        "content": [
+          {
+            "elem": "content",
+            "content": [
+              { "block": "text", "mods": { "size": "l" } },
+              { "block": "button", "mods": { "size": "xl" } }
+            ]
+          }
+        ]
+      }`;
+      globalThis.reset();
+      expect(globalThis.lint(validButtonSize)).to.have.lengthOf(0);
+    });
+
+    it("TEST_6. Button has valid size (button before text).", () => {
+      const validButtonSize = `{
+        "block": "warning",
+        "content": [
+          {
+            "elem": "content",
+            "content": [
+              { "block": "button", "mods": { "size": "xl" } },
+              { "block": "text", "mods": { "size": "l" } }
+            ]
+          }
+        ]
+      }`;
+      globalThis.reset();
+      expect(globalThis.lint(validButtonSize)).to.have.lengthOf(0);
+    });
+
+    it("TEST_7. Text size is undefined.", () => {
+      const noTextSize = `{
+        "block": "warning",
+        "content": [
+          {
+            "elem": "content",
+            "content": [
+              { "block": "button", "mods": { "size": "xl" } }
+            ]
+          }
+        ]
+      }`;
+      globalThis.reset();
+      expect(globalThis.lint(noTextSize)).to.have.lengthOf(0);
+    });
+
+    it("TEST_8. Button has invalid size (button after text).", () => {
+      globalThis.reset();
+      const invalidButtonSize = `{
+        "block": "warning",
+        "content": [
+          {
+            "elem": "content",
+            "content": [
+              { "block": "text", "mods": { "size": "xl" } },
+              { "block": "button", "mods": { "size": "l" } }
+            ]
+          }
+        ]
+      }`;
+      const errors = globalThis.lint(invalidButtonSize);
+
+      expect(errors).to.have.lengthOf(1);
+      expect(errors[0]).to.deep.equal({
+        code: "WARNING.INVALID_BUTTON_SIZE",
+        error: "Button sizes inside 'warning' shoud be 1 more.",
+        location: {start: {column: 15, line: 8}, end: {column: 61, line: 8}}
+      });
+    });
+
+    it("TEST_9. Button has invalid size (button before text).", () => {
+      globalThis.reset();
+      const invalidButtonSize = `{
+        "block": "warning",
+        "content": [
+          {
+            "elem": "content",
+            "content": [
+              { "block": "button", "mods": { "size": "l" } },
+              { "block": "text", "mods": { "size": "xl" } }
+            ]
+          }
+        ]
+      }`;
+      const errors = globalThis.lint(invalidButtonSize);
+
+      expect(errors).to.have.lengthOf(1);
+      expect(errors[0]).to.deep.equal({
+        code: "WARNING.INVALID_BUTTON_SIZE",
+        error: "Button sizes inside 'warning' shoud be 1 more.",
+        location: {start: {column: 15, line: 7}, end: {column: 61, line: 7}}
+      });
+    });
+
+    it("TEST_10. Button has invalid BORDER size (button before text).", () => {
+      globalThis.reset();
+      const invalidButtonSize = `{
+        "block": "warning",
+        "content": [
+          {
+            "elem": "content",
+            "content": [
+              { "block": "button", "mods": { "size": "xxxxxxl" } },
+              { "block": "text", "mods": { "size": "xxxxxl" } }
+            ]
+          }
+        ]
+      }`;
+      const errors = globalThis.lint(invalidButtonSize);
+
+      expect(errors).to.have.lengthOf(0);
+    });
+
+    it("TEST_11. Button has invalid BORDER size (button after text).", () => {
+      globalThis.reset();
+      const invalidButtonSize = `{
+        "block": "warning",
+        "content": [
+          {
+            "elem": "content",
+            "content": [
+              { "block": "text", "mods": { "size": "xxxs" } },
+              { "block": "button", "mods": { "size": "xxxs" } }
+            ]
+          }
+        ]
+      }`;
+      const errors = globalThis.lint(invalidButtonSize);
+
+      expect(errors).to.have.lengthOf(1);
+      expect(errors[0]).to.deep.equal({
+        code: "WARNING.INVALID_BUTTON_SIZE",
+        error: "Button sizes inside 'warning' shoud be 1 more.",
+        location: {start: {column: 15, line: 8}, end: {column: 64, line: 8}}
+      });
+    });
+
+    it("TEST_12. Button has invalid size (equal text size) (button after text).", () => {
+      globalThis.reset();
+      const invalidButtonSize = `{
+        "block": "warning",
+        "content": [
+          {
+            "elem": "content",
+            "content": [
+              { "block": "text", "mods": { "size": "xxxs" } },
+              { "block": "button", "mods": { "size": "xxxs" } }
+            ]
+          }
+        ]
+      }`;
+      const errors = globalThis.lint(invalidButtonSize);
+
+      expect(errors).to.have.lengthOf(1);
+      expect(errors[0]).to.deep.equal({
+        code: "WARNING.INVALID_BUTTON_SIZE",
+        error: "Button sizes inside 'warning' shoud be 1 more.",
+        location: {start: {column: 15, line: 8}, end: {column: 64, line: 8}}
+      });
+    });
+
+    it("TEST_13. Button has valid size outside warning.", () => {
+      globalThis.reset();
+      const validButtonSize = `{
+        "block": "test",
+        "content": [
+          { "block": "text", "mods": { "size": "l" } },
+          { "block": "button", "mods": { "size": "xl" } }
+        ]
+      }`;
+      const errors = globalThis.lint(validButtonSize);
+
+      expect(errors).to.have.lengthOf(0);
+    });
+  });
 
   // describe("    Checking button position  ", () => {
-  //     it("TEST_14. Button has valid position (after placeholder).", () => {
+  //     it("Button positions_1. Button has valid position (after placeholder).", () => {
   //       const validButtonPosition = `{
   //         "block": "warning",
   //         "content": [
@@ -316,7 +316,7 @@ describe("<<<<<     CHECKING WARNING     >>>>>", () => {
   //       expect(globalThis.lint(validButtonPosition)).to.have.lengthOf(0);
   //     });
   //
-  //     it("TEST_15. Button has invalid position (before placeholder).", () => {
+  //     it("Button positions_2. Button has invalid position (before placeholder).", () => {
   //       globalThis.reset();
   //       const invalidButtonPosition = `{
   //         "block": "warning",
@@ -333,19 +333,15 @@ describe("<<<<<     CHECKING WARNING     >>>>>", () => {
   //
   //       const errors = globalThis.lint(invalidButtonPosition);
   //       expect(errors).to.have.lengthOf(1);
-  //       console.log("########################################");//
-  //       console.log('errors: ', errors);//
-  //       console.log(errors[0].location.start);//
-  //       console.log(errors[0].location.end);//
-  //       console.log("########################################");//
+  //
   //       expect(errors[0]).to.deep.equal({
   //         code: "WARNING.INVALID_BUTTON_POSITION",
   //         error: "Button can't be in front of the placeholder.",
-  //         location: {start: {column: 15, line: 8}, end: {column: 66, line: 8}}
+  //         location: {start: {column: 17, line: 7}, end: {column: 63, line: 7}}
   //       });
   //     });
   //
-  //     it("TEST_16. Button has invalid position (between 2 placeholders).", () => {
+  //     it("Button positions_3. Button has invalid position (between 2 placeholders).", () => {
   //       globalThis.reset();
   //       const invalidButtonPosition = `{
   //         "block": "warning",
@@ -362,20 +358,16 @@ describe("<<<<<     CHECKING WARNING     >>>>>", () => {
   //       }`;
   //
   //       const errors = globalThis.lint(invalidButtonPosition);
-  //       console.log("########################################");//
-  //       console.log('errors: ', errors);//
-  //       console.log(errors[0].location.start);//
-  //       console.log(errors[0].location.end);//
-  //       console.log("########################################");//
+  //
   //       expect(errors).to.have.lengthOf(1);
   //       expect(errors[0]).to.deep.equal({
   //         code: "WARNING.INVALID_BUTTON_POSITION",
   //         error: "Button can't be in front of the placeholder.",
-  //         location: {start: {column: 15, line: 8}, end: {column: 61, line: 8}}
+  //         location: {start: {column: 17, line: 8}, end: {column: 63, line: 8}}
   //       });
   //     });
   //
-  //     it("TEST_17. Button has invalid position (before and nested placeholder).", () => {
+  //     it("Button positions_4. Button has invalid position (before and nested placeholder).", () => {
   //       globalThis.reset();
   //       const invalidButtonPosition = `{
   //         "block": "warning",
@@ -393,16 +385,12 @@ describe("<<<<<     CHECKING WARNING     >>>>>", () => {
   //       }`;
   //
   //       const errors = globalThis.lint(invalidButtonPosition);
-  //       console.log("########################################");//
-  //       console.log('errors: ', errors);//
-  //       console.log(errors[0].location.start);//
-  //       console.log(errors[0].location.end);//
-  //       console.log("########################################");//
+  //
   //       expect(errors).to.have.lengthOf(1);
   //       expect(errors[0]).to.deep.equal({
   //         code: "WARNING.INVALID_BUTTON_POSITION",
   //         error: "Button can't be in front of the placeholder.",
-  //         location: {start: {column: 17, line: 8}, end: {column: 63, line: 8}}
+  //         location: {start: {column: 19, line: 8}, end: {column: 65, line: 8}}
   //       });
   //     });
   //   });

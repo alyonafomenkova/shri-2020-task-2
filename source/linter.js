@@ -47,7 +47,10 @@ class WarningCheck {
     this.inProgress = false;
     this.refSize = null;
     this.location = null;
+    this.buttonPlaceholderArray = [];
     this.placeholderLocation = null;
+    this.buttonLocation = null;
+    //this.isButtonEnable = false;
   }
 
   checkTextSizes(parent) {
@@ -70,40 +73,66 @@ class WarningCheck {
     }
   }
 
-  checkButtonSize(parent) {
-    this.location = parent.loc;
-    console.log(`button внутри warning найден тут: `, this.location); //
+  checkButtonSize() {
     const sizes = ["xxxs", "xxs", "xs", "s", "m", "l", "xl", "xxl", "xxxl", "xxxxl", "xxxxxl"];
-    const mods = parent.children.find((e) => { return e.key.value === "mods" });
-    const button = mods.value.children.find((e) => { return e.key.value === "size" });
-    const buttonSize = button.value.value;
+    const buttons = this.buttonPlaceholderArray.filter((e) => { return e.title === "button" });
 
-    if (!containsSizes(sizes, buttonSize)) {
-      console.error(`Button can't be this size.`);
-      pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location); //
-    } else {
-      const refButtonSize = sizes[sizes.findIndex((size) => size === this.refSize) + 1];
+    buttons.forEach((button) => {
+      const size = button.mods.value.children.find((e) => { return e.key.value === "size" });
+      const buttonSize = size.value.value;
 
-      if (this.refSize !== null && buttonSize !== refButtonSize) {
-        console.log(`неверный размер! Должен быть refButtonSize: ${refButtonSize}`); //
-        pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location);
+      if (!containsSizes(sizes, buttonSize)) {
+        console.error(`Button can't be this size.`);
+      } else {
+        const refButtonSize = sizes[sizes.findIndex((size) => size === this.refSize) + 1];
+
+        if (this.refSize !== null && buttonSize !== refButtonSize) {
+          console.log(`неверный размер! Должен быть refButtonSize: ${refButtonSize}`); //
+          pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.buttonLocation);
+        }
       }
+    });
+
+
+
+    // const mods = parent.children.find((e) => { return e.key.value === "mods" });
+    // const button = mods.value.children.find((e) => { return e.key.value === "size" });
+    // const buttonSize = button.value.value;
+    //
+    // if (!containsSizes(sizes, buttonSize)) {
+    //   console.error(`Button can't be this size.`);
+    //   pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location); //
+    // } else {
+    //   const refButtonSize = sizes[sizes.findIndex((size) => size === this.refSize) + 1];
+    //
+    //   if (this.refSize !== null && buttonSize !== refButtonSize) {
+    //     console.log(`неверный размер! Должен быть refButtonSize: ${refButtonSize}`); //
+    //     pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location);
+    //   }
+    // }
+  }
+
+  checkButtonPosition(parent) {
+    console.log("this.buttons: ", this.buttons);
+    this.buttonLocation = parent.loc;
+    console.log('button внутри warning найден тут: ', this.buttonLocation); //
+    const isBtnBeforPlaceholder = ((this.placeholderLocation === null) || (this.buttonLocation.end.line < this.placeholderLocation.start.line)) || (this.buttonLocation.end.line === this.placeholderLocation.start.line && this.buttonLocation.end.column < this.placeholderLocation.start.column);
+    if (isBtnBeforPlaceholder) {
+      console.log(`неверное положение кнопки`); //
+      pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", this.buttonLocation);
     }
   }
 
-  checkPlaceholderSize(parent) {
-    this.placeholderLocation = parent.loc;
-    console.log('placeholder внутри warning найден тут: ', this.placeholderLocation); //
-    const mods = parent.children.find((e) => { return e.key.value === "mods" });
+  checkPlaceholderSize() {
+    const placeholders = this.buttonPlaceholderArray.filter((e) => { return e.title === "placeholder" });
 
-    if (mods) {
-      const size = mods.value.children.find((e) => { return e.key.value === "size" });
+    placeholders.forEach((placeholder) => {
+      const size = placeholder.mods.value.children.find((e) => { return e.key.value === "size" });
+
       if (!["s", "m", "l"].includes(size.value.value)) {
         pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", this.placeholderLocation);
       }
-    } else {
-      pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", this.placeholderLocation);
-    }
+    });
   }
 
   process(parent, node) {
@@ -118,6 +147,7 @@ class WarningCheck {
         this.inProgress = true;
         traverse(parent);
         this.inProgress = false;
+        console.log("this.buttonPlaceholderArray from process: ", this.buttonPlaceholderArray);
         console.log("[FINISH] Checking warning");
       }
     } else if (this.inProgress && value === "text") {
@@ -125,72 +155,29 @@ class WarningCheck {
     }
 
     if (this.inProgress && value === "placeholder") {
-      this.checkPlaceholderSize(parent);
+      this.placeholderLocation = parent.loc;
+      this.buttonPlaceholderArray.push({
+        mods: parent.children.find((e) => { return e.key.value === "mods" }),
+        title: node.value.value,
+        location: this.placeholderLocation
+      });
     }
 
-    // if (!this.inProgress && value === "button") {
-    //   this.checkButtonSize(parent);
-    // }
+    if (this.inProgress && value === "button") {
+      this.buttonLocation = parent.loc;
+      this.buttonPlaceholderArray.push({
+        mods: parent.children.find((e) => { return e.key.value === "mods" }),
+        title: node.value.value,
+        location: this.buttonLocation
+      });//
+      //this.checkButtonPosition(parent);
+    }
+  }
 
-
-
-    // // // new button size rule
-    // if (!this.inProgress && node.value.value === "button") {
-    //   this.buttonLocation = parent.loc;
-    //   console.log(`button внутри warning найден тут: `, this.buttonLocation);
-    //   console.log(` this.refSize: `,  this.refSize);
-    //   this.location = parent.loc;
-    //   const mods = parent.children.find((e) => { return e.key.value === "mods" });
-    //   // Check position
-    //   if ((this.buttonLocation.end.line < this.lastPlaceholderBlock.start.line) || (this.buttonLocation.end.line === this.lastPlaceholderBlock.start.line && this.buttonLocation.end.column < this.lastPlaceholderBlock.start.column)) {
-    //     pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", this.buttonLocation)
-    //   }
-    // //   //
-    // //   if (!this.buttonEnabled) {
-    // //     pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", this.location);/////
-    // //   } else {//start else
-    //     const button = mods.value.children.find((e) => { return e.key.value === "size" });
-    //     const buttonSize = button.value.value;
-    //
-    //     if (!containsSizes(this.sizes, buttonSize)) {
-    //       console.error(`Button can't be this size.`);
-    //     } else {
-    //       const refButtonSize = this.sizes[this.sizes.findIndex((size) => size === this.refSize) + 1];
-    //       if (this.refSize !== null && buttonSize !== refButtonSize) {
-    //         console.log(`неверный размер! Должен быть refButtonSize: ${refButtonSize}`);
-    //         pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.location);
-    //       }
-    //       }// end else
-    //     //}//end else
-    // }
-    //
-    //
-    //
-    //
-    // // //placeholder rule
-    // if (this.inProgress && node.value.value === "placeholder") {
-    //   this.lastPlaceholderBlock = parent.loc; //
-    //   //this.location = parent.loc;
-    //   console.log('placeholder внутри warning найден тут: ', this.lastPlaceholderBlock);
-    //   this.buttonEnabled = true;
-    //   //
-    //   if (this.lastPlaceholderBlock == null) {
-    //     console.error("Last placeholder block is null");
-    //   } else {
-    //     const loc = this.lastPlaceholderBlock.loc;
-    //     //console.log(`${node.value.value.toUpperCase()} inside PLACEHOLDER BLOCK: ${loc.start.line}...${loc.end.line}`);
-    //     const mods = parent.children.find((e) => { return e.key.value === "mods" });
-    //     if (mods) {
-    //       const size = mods.value.children.find((e) => { return e.key.value === "size" });
-    //       if (!["s", "m", "l"].includes(size.value.value)) {
-    //         pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", loc);
-    //       }
-    //     } else {
-    //       pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", loc);
-    //     }
-    //   }
-    //   //
-    // }
+  onComplete() {
+    console.log(`warning ONCOMLEATE`);
+    this.checkButtonSize();
+    this.checkPlaceholderSize();
   }
 }
 
@@ -310,6 +297,7 @@ function lint(jsonString) {
   const ast = jsonToAst(jsonString);
   traverse(ast);
   titlesCheck.onComplete();
+  warningCheck.onComplete();
   console.log("errors: ", errors);
   return errors;
 };
@@ -327,13 +315,47 @@ function reset() {
 globalThis.lint = lint;
 //globalThis.reset = reset; //
 
-const a = `{
-         "block": "warning",
-         "content": [
-           { "block": "text", "mods": { "size": "l" } },
-           { "block": "placeholder", "mods": { "size": "xs" } },
-           { "block": "button", "mods": { "size": "xl" } }
-         ]
-      }`;
+const valid = `{
+          "block": "warning",
+          "content": [
+            {
+              "elem": "content",
+              "content": [
+                { "block": "placeholder", "mods": { "size": "s" } },
+                { "block": "button", "mods": { "size": "m" } }
+              ]
+            }
+          ]
+        }`;
 
-//lint(a); //
+const invalid = `{
+          "block": "warning",
+          "content": [
+            {
+              "elem": "content",
+              "content": [
+                { "block": "placeholder", "mods": { "size": "s" } },
+                { "block": "button", "mods": { "size": "m" } },
+                { "block": "placeholder", "mods": { "size": "xll" } },
+                { "block": "button", "mods": { "size": "m" } }
+              ]
+            }
+          ]
+        }`;
+
+const notWarning = `{
+          "block": "test",
+          "content": [
+            {
+              "elem": "content",
+              "content": [
+                { "block": "placeholder" },
+                { "block": "button", "mods": { "size": "m" } },
+                { "block": "placeholder", "mods": { "size": "sd" } },
+                { "block": "button", "mods": { "size": "m" } }
+              ]
+            }
+          ]
+        }`;
+
+//lint(invalid); //
