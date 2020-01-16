@@ -295,6 +295,8 @@ function traverse(node) {
 }
 
 function lint(jsonString) {
+  if (typeof jsonString !== 'string') return;
+
   const ast = jsonToAst(jsonString);
   traverse(ast);
   titlesCheck.onComplete();
@@ -316,47 +318,45 @@ function reset() {
 globalThis.lint = lint;
 //globalThis.reset = reset; //
 
-const valid = `{
-          "block": "warning",
-          "content": [
-            {
-              "elem": "content",
-              "content": [
-                { "block": "placeholder", "mods": { "size": "s" } },
-                { "block": "button", "mods": { "size": "m" } }
-              ]
-            }
-          ]
-        }`;
+// valid ?
 
-const invalid = `{
-          "block": "warning",
-          "content": [
-            {
-              "elem": "content",
-              "content": [
-                { "block": "placeholder", "mods": { "size": "s" } },
-                { "block": "button", "mods": { "size": "m" } },
-                { "block": "placeholder", "mods": { "size": "xll" } },
-                { "block": "button", "mods": { "size": "m" } }
-              ]
-            }
-          ]
-        }`;
+const interestingCase = `{  
+"block": "warning",
+  "content": [ 
+      { "block": "text", "mods": { "size": "l" } }, 
+      { "block": "wrapper", 
+        "content": [ 
+          { "block": "text", "mods": { "size": "l" } } 
+        ] 
+      } 
+  ],
+  "mix": [
+    {  
+      "block": "warning",
+      "content":[
+        {
+        "block": "text",
+        "mods": { "type": "h1", "size": "s" }
+        },
+        {
+        "block": "text",
+        "mods": { "type": "h2", "size": "s" }
+        }
+      ]
+    }
+  ]
+}`;
 
-const notWarning = `{
-          "block": "test",
-          "content": [
-            {
-              "elem": "content",
-              "content": [
-                { "block": "placeholder" },
-                { "block": "button", "mods": { "size": "m" } },
-                { "block": "placeholder", "mods": { "size": "sd" } },
-                { "block": "button", "mods": { "size": "m" } }
-              ]
-            }
-          ]
-        }`;
+const valid = `{ 
+  "block": "warning", 
+  "content": [ 
+      { "block": "text", "mods": { "size": "l" } }, 
+      { "block": "wrapper", 
+        "content": [ 
+          { "block": "text", "mods": { "size": "xl" } } 
+        ] 
+      } 
+  ] 
+}`;
 
-//lint(invalid); //
+//lint(interestingCase); //
