@@ -79,18 +79,11 @@ class WarningCheck {
     buttons.forEach((button) => {
       const size = button.mods.value.children.find((e) => { return e.key.value === "size" });
       const buttonSize = size.value.value;
+      const refButtonSize = sizes[sizes.findIndex((size) => size === this.refSize) + 1];
 
-      if (!containsSizes(sizes, buttonSize)) {
-        console.error(`Button can't be this size.`);
-        // Возможно тут тоже стоит сделать pushError
-        //pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.buttonLocation);//
-      } else {
-        const refButtonSize = sizes[sizes.findIndex((size) => size === this.refSize) + 1];
-
-        if (this.refSize !== null && buttonSize !== refButtonSize) {
-          console.log(`неверный размер! Должен быть refButtonSize: ${refButtonSize}`); //
-          pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.buttonLocation);
-        }
+      if (!containsSizes(sizes, buttonSize) || (this.refSize !== null && buttonSize !== refButtonSize)) {
+        console.log(`неверный размер! Должен быть refButtonSize: ${refButtonSize}`); //
+        pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.buttonLocation);
       }
     });
   }
@@ -164,7 +157,6 @@ class WarningCheck {
         location: this.buttonLocation,
         depth: depth
       });
-      //this.checkButtonPosition(parent);
     }
   }
 
@@ -359,4 +351,17 @@ const valid = `{
   ] 
 }`;
 
-//lint(interestingCase); //
+const size = `{
+        "block": "warning",
+        "content": [
+          {
+            "elem": "content",
+            "content": [
+              { "block": "button", "mods": { "size": "xxxxxxl" } },
+              { "block": "text", "mods": { "size": "xxxxxl" } }
+            ]
+          }
+        ]
+      }`;
+
+//lint(size); //

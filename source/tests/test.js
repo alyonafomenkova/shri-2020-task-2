@@ -176,8 +176,8 @@ describe("<<<<<     CHECKING WARNING     >>>>>", () => {
           {
             "elem": "content",
             "content": [
-              { "block": "text", "mods": { "size": "xl" } },
-              { "block": "button", "mods": { "size": "l" } }
+              { "block": "text", "mods": { "size": "l" } },
+              { "block": "button", "mods": { "size": "s" } }
             ]
           }
         ]
@@ -200,8 +200,8 @@ describe("<<<<<     CHECKING WARNING     >>>>>", () => {
           {
             "elem": "content",
             "content": [
-              { "block": "button", "mods": { "size": "l" } },
-              { "block": "text", "mods": { "size": "xl" } }
+              { "block": "button", "mods": { "size": "s" } },
+              { "block": "text", "mods": { "size": "l" } }
             ]
           }
         ]
@@ -232,7 +232,12 @@ describe("<<<<<     CHECKING WARNING     >>>>>", () => {
       }`;
       const errors = globalThis.lint(invalidButtonSize);
 
-      expect(errors).to.have.lengthOf(0);
+      expect(errors).to.have.lengthOf(1);
+      expect(errors[0]).to.deep.equal({
+        code: "WARNING.INVALID_BUTTON_SIZE",
+        error: "Button sizes inside 'warning' shoud be 1 more.",
+        location: {start: {column: 15, line: 7}, end: {column: 67, line: 7}}
+      });
     });
 
     it("Button sizes_7. Button has invalid BORDER size (button after text).", () => {
