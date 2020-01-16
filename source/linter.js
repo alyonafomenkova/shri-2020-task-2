@@ -47,8 +47,7 @@ class WarningCheck {
     this.inProgress = false;
     this.refSize = null;
     this.location = null;
-    this.lastPlaceholderBlock = null;//
-    this.buttonEnabled = false;//
+    this.placeholderLocation = null;
   }
 
   checkTextSizes(parent) {
@@ -92,6 +91,21 @@ class WarningCheck {
     }
   }
 
+  checkPlaceholderSize(parent) {
+    this.placeholderLocation = parent.loc;
+    console.log('placeholder внутри warning найден тут: ', this.placeholderLocation); //
+    const mods = parent.children.find((e) => { return e.key.value === "mods" });
+
+    if (mods) {
+      const size = mods.value.children.find((e) => { return e.key.value === "size" });
+      if (!["s", "m", "l"].includes(size.value.value)) {
+        pushError(INVALID_PLACEHOLDER_SIZE, "Placeholder sizes inside 'warning' shoud be \"s\", \"m\", or \"l\"", this.placeholderLocation);
+      }
+    } else {
+      pushError(ERROR_PLACEHOLDER_NO_SIZE_VALUE, "Placeholder block with 'mods' has no 'size' block", this.placeholderLocation);
+    }
+  }
+
   process(parent, node) {
     const key = node.key.value;
     const value = node.value.value;
@@ -108,6 +122,10 @@ class WarningCheck {
       }
     } else if (this.inProgress && value === "text") {
       this.checkTextSizes(parent);
+    }
+
+    if (this.inProgress && value === "placeholder") {
+      this.checkPlaceholderSize(parent);
     }
 
     // if (!this.inProgress && value === "button") {
@@ -310,16 +328,12 @@ globalThis.lint = lint;
 //globalThis.reset = reset; //
 
 const a = `{
-        "block": "warning",
-        "content": [
-          {
-            "elem": "content",
-            "content": [
-              { "block": "text", "mods": { "size": "xl" } },
-              { "block": "button", "mods": { "size": "l" } }
-            ]
-          }
-        ]
+         "block": "warning",
+         "content": [
+           { "block": "text", "mods": { "size": "l" } },
+           { "block": "placeholder", "mods": { "size": "xs" } },
+           { "block": "button", "mods": { "size": "xl" } }
+         ]
       }`;
 
 //lint(a); //
