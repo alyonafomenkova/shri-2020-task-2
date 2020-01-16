@@ -83,7 +83,7 @@ class WarningCheck {
       if (!containsSizes(sizes, buttonSize)) {
         console.error(`Button can't be this size.`);
         // Возможно тут тоже стоит сделать pushError
-        pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.buttonLocation);//
+        //pushError(INVALID_BUTTON_SIZE, "Button sizes inside 'warning' shoud be 1 more.", this.buttonLocation);//
       } else {
         const refButtonSize = sizes[sizes.findIndex((size) => size === this.refSize) + 1];
 
@@ -105,8 +105,10 @@ class WarningCheck {
 
       //const isBtnBeforePlaceholder = ((this.placeholderLocation === null) || (this.buttonLocation.end.line < this.placeholderLocation.start.line)) || (this.buttonLocation.end.line === this.placeholderLocation.start.line && this.buttonLocation.end.column < this.placeholderLocation.start.column);
 
-      if(prevTitle === "button" && currTitle === "placeholder") {
-        pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", prevLocation);
+      if (prevTitle === "button" && currTitle === "placeholder") {
+        if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
+          pushError(INVALID_BUTTON_POSITION, "Button can't be in front of the placeholder.", prevLocation);
+        }
       }
     }
   }
@@ -227,11 +229,17 @@ class TitlesCheck {
 
       //if (prevDepth >= currDepth) {//
         if (prevTitle === "h2" && currTitle === "h1") {
-          pushError(INVALID_H2_POSITION, "H2 should be after H1", prevLocation);
+          // (h2End.line < h1Start.line) || (h2End.line === h1Start.line && h2End.column < h1Start.column)
+          if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
+            pushError(INVALID_H2_POSITION, "H2 should be after H1", prevLocation);
+          }
         } else if (prevTitle === "h3" && currTitle === "h2") {
-          pushError(INVALID_H3_POSITION, "H3 should be after H2", prevLocation);
+          //(h3End.line < h2Start.line) || (h3End.line === h2Start.line && h3End.column < h2Start.column)
+          if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
+            pushError(INVALID_H3_POSITION, "H3 should be after H2", prevLocation);
+          }
         } else if (prevTitle === "h3" && currTitle === "h1") {
-          pushError(INVALID_H3_POSITION, "H3 should be after H1", prevLocation);
+          pushError(INVALID_H3_POSITION, "H3 should be after H2", prevLocation);
         }
       //}//
     }
