@@ -728,221 +728,221 @@ describe("<<<<<     CHECKING TITLES     >>>>>", () => {
   });
 });
 
-describe("<<<<<     CHECKING GRID     >>>>>", () => {
-  describe("       Checking ratio of grid  ", () => {
-    it("Grid_1. Marketing blocks < grid / 2.", () => {
-      const valid1 = `{
-        "block": "grid",
-        "mods": {
-          "m-columns": "10"
-        },
-        "content": [
-          {
-           "block": "grid",
-           "elem": "fraction",
-           "elemMods": {
-               "m-col": "8"
-           },
-           "content": [
-               {
-                   "block": "payment"
-               }
-           ]
-          },
-          {
-           "block": "grid",
-           "elem": "fraction",
-           "elemMods": {
-               "m-col": "2"
-           },
-           "content": [
-               {
-                   "block": "offer"
-               }
-           ]
-          }
-        ]
-      }`;
-      globalThis.reset();
-      expect(globalThis.lint(valid1)).to.have.lengthOf(0);
-    });
-
-    it("Grid_2. Marketing blocks = grid / 2.", () => {
-      globalThis.reset();
-      const valid2 = `{
-        "block": "grid",
-        "mods": {
-          "m-columns": "10"
-        },
-        "content": [
-          {
-           "block": "grid",
-           "elem": "fraction",
-           "elemMods": {
-               "m-col": "5"
-           },
-           "content": [
-               {
-                   "block": "payment"
-               }
-           ]
-          },
-          {
-           "block": "grid",
-           "elem": "fraction",
-           "elemMods": {
-               "m-col": "5"
-           },
-           "content": [
-               {
-                   "block": "offer"
-               }
-           ]
-          }
-        ]
-      }`;
-      const errors = globalThis.lint(valid2);
-
-      expect(errors).to.have.lengthOf(0);
-    });
-
-    it("Grid_3. Marketing blocks (offer) > grid / 2.", () => {
-      const invalid1 = `{
-        "block": "grid",
-        "mods": {
-          "m-columns": "10"
-        },
-        "content": [
-          {
-           "block": "grid",
-           "elem": "fraction",
-           "elemMods": {
-               "m-col": "2"
-           },
-           "content": [
-               {
-                   "block": "payment"
-               }
-           ]
-          },
-          {
-           "block": "grid",
-           "elem": "fraction",
-           "elemMods": {
-               "m-col": "8"
-           },
-           "content": [
-               {
-                   "block": "offer"
-               }
-           ]
-          }
-        ]
-      }`;
-      globalThis.reset();
-      const errors = globalThis.lint(invalid1);
-
-      expect(errors).to.have.lengthOf(1);
-      expect(errors[0]).to.deep.equal({
-        code: "GRID.TOO_MUCH_MARKETING_BLOCKS",
-        error: "Marketing blocks should take no more than half of all columns of grid.",
-        location: {start: {column: 1, line: 1}, end: {column: 8, line: 32}}
-      });
-
-
-
-    });
-
-    it("Grid_4. Marketing blocks (commercial) > grid / 2.", () => {
-      const invalid2 = `{
-        "block": "grid",
-        "mods": {
-          "m-columns": "10"
-        },
-        "content": [
-          {
-           "block": "grid",
-           "elem": "fraction",
-           "elemMods": {
-               "m-col": "2"
-           },
-           "content": [
-               {
-                   "block": "payment"
-               }
-           ]
-          },
-          {
-           "block": "grid",
-           "elem": "fraction",
-           "elemMods": {
-               "m-col": "8"
-           },
-           "content": [
-               {
-                   "block": "commercial"
-               }
-           ]
-          }
-        ]
-      }`;
-      globalThis.reset();
-      const errors = globalThis.lint(invalid2);
-
-      expect(errors).to.have.lengthOf(1);
-      expect(errors[0]).to.deep.equal({
-        code: "GRID.TOO_MUCH_MARKETING_BLOCKS",
-        error: "Marketing blocks should take no more than half of all columns of grid.",
-        location: {start: {column: 1, line: 1}, end: {column: 8, line: 32}}
-      });
-
-
-
-    });
-
-    it("Grid_5. Marketing blocks take all grid.", () => {
-      const invalid3 = `{
-        "block": "grid",
-        "mods": {
-          "m-columns": "10"
-        },
-        "content": [
-          {
-           "block": "grid",
-           "elem": "fraction",
-           "elemMods": {
-               "m-col": "2"
-           },
-           "content": [
-               {
-                   "block": "offer"
-               }
-           ]
-          },
-          {
-           "block": "grid",
-           "elem": "fraction",
-           "elemMods": {
-               "m-col": "8"
-           },
-           "content": [
-               {
-                   "block": "commercial"
-               }
-           ]
-          }
-        ]
-      }`;
-      globalThis.reset();
-      const errors = globalThis.lint(invalid3);
-
-      expect(errors).to.have.lengthOf(1);
-      expect(errors[0]).to.deep.equal({
-        code: "GRID.TOO_MUCH_MARKETING_BLOCKS",
-        error: "Marketing blocks should take no more than half of all columns of grid.",
-        location: {start: {column: 1, line: 1}, end: {column: 8, line: 32}}
-      });
-    });
-
-  });
-});
+// describe("<<<<<     CHECKING GRID     >>>>>", () => {
+//   describe("       Checking ratio of grid  ", () => {
+//     it("Grid_1. Marketing blocks < grid / 2.", () => {
+//       const valid1 = `{
+//         "block": "grid",
+//         "mods": {
+//           "m-columns": "10"
+//         },
+//         "content": [
+//           {
+//            "block": "grid",
+//            "elem": "fraction",
+//            "elemMods": {
+//                "m-col": "8"
+//            },
+//            "content": [
+//                {
+//                    "block": "payment"
+//                }
+//            ]
+//           },
+//           {
+//            "block": "grid",
+//            "elem": "fraction",
+//            "elemMods": {
+//                "m-col": "2"
+//            },
+//            "content": [
+//                {
+//                    "block": "offer"
+//                }
+//            ]
+//           }
+//         ]
+//       }`;
+//       globalThis.reset();
+//       expect(globalThis.lint(valid1)).to.have.lengthOf(0);
+//     });
+//
+//     it("Grid_2. Marketing blocks = grid / 2.", () => {
+//       globalThis.reset();
+//       const valid2 = `{
+//         "block": "grid",
+//         "mods": {
+//           "m-columns": "10"
+//         },
+//         "content": [
+//           {
+//            "block": "grid",
+//            "elem": "fraction",
+//            "elemMods": {
+//                "m-col": "5"
+//            },
+//            "content": [
+//                {
+//                    "block": "payment"
+//                }
+//            ]
+//           },
+//           {
+//            "block": "grid",
+//            "elem": "fraction",
+//            "elemMods": {
+//                "m-col": "5"
+//            },
+//            "content": [
+//                {
+//                    "block": "offer"
+//                }
+//            ]
+//           }
+//         ]
+//       }`;
+//       const errors = globalThis.lint(valid2);
+//
+//       expect(errors).to.have.lengthOf(0);
+//     });
+//
+//     it("Grid_3. Marketing blocks (offer) > grid / 2.", () => {
+//       const invalid1 = `{
+//         "block": "grid",
+//         "mods": {
+//           "m-columns": "10"
+//         },
+//         "content": [
+//           {
+//            "block": "grid",
+//            "elem": "fraction",
+//            "elemMods": {
+//                "m-col": "2"
+//            },
+//            "content": [
+//                {
+//                    "block": "payment"
+//                }
+//            ]
+//           },
+//           {
+//            "block": "grid",
+//            "elem": "fraction",
+//            "elemMods": {
+//                "m-col": "8"
+//            },
+//            "content": [
+//                {
+//                    "block": "offer"
+//                }
+//            ]
+//           }
+//         ]
+//       }`;
+//       globalThis.reset();
+//       const errors = globalThis.lint(invalid1);
+//
+//       expect(errors).to.have.lengthOf(1);
+//       expect(errors[0]).to.deep.equal({
+//         code: "GRID.TOO_MUCH_MARKETING_BLOCKS",
+//         error: "Marketing blocks should take no more than half of all columns of grid.",
+//         location: {start: {column: 1, line: 1}, end: {column: 8, line: 32}}
+//       });
+//
+//
+//
+//     });
+//
+//     it("Grid_4. Marketing blocks (commercial) > grid / 2.", () => {
+//       const invalid2 = `{
+//         "block": "grid",
+//         "mods": {
+//           "m-columns": "10"
+//         },
+//         "content": [
+//           {
+//            "block": "grid",
+//            "elem": "fraction",
+//            "elemMods": {
+//                "m-col": "2"
+//            },
+//            "content": [
+//                {
+//                    "block": "payment"
+//                }
+//            ]
+//           },
+//           {
+//            "block": "grid",
+//            "elem": "fraction",
+//            "elemMods": {
+//                "m-col": "8"
+//            },
+//            "content": [
+//                {
+//                    "block": "commercial"
+//                }
+//            ]
+//           }
+//         ]
+//       }`;
+//       globalThis.reset();
+//       const errors = globalThis.lint(invalid2);
+//
+//       expect(errors).to.have.lengthOf(1);
+//       expect(errors[0]).to.deep.equal({
+//         code: "GRID.TOO_MUCH_MARKETING_BLOCKS",
+//         error: "Marketing blocks should take no more than half of all columns of grid.",
+//         location: {start: {column: 1, line: 1}, end: {column: 8, line: 32}}
+//       });
+//
+//
+//
+//     });
+//
+//     it("Grid_5. Marketing blocks take all grid.", () => {
+//       const invalid3 = `{
+//         "block": "grid",
+//         "mods": {
+//           "m-columns": "10"
+//         },
+//         "content": [
+//           {
+//            "block": "grid",
+//            "elem": "fraction",
+//            "elemMods": {
+//                "m-col": "2"
+//            },
+//            "content": [
+//                {
+//                    "block": "offer"
+//                }
+//            ]
+//           },
+//           {
+//            "block": "grid",
+//            "elem": "fraction",
+//            "elemMods": {
+//                "m-col": "8"
+//            },
+//            "content": [
+//                {
+//                    "block": "commercial"
+//                }
+//            ]
+//           }
+//         ]
+//       }`;
+//       globalThis.reset();
+//       const errors = globalThis.lint(invalid3);
+//
+//       expect(errors).to.have.lengthOf(1);
+//       expect(errors[0]).to.deep.equal({
+//         code: "GRID.TOO_MUCH_MARKETING_BLOCKS",
+//         error: "Marketing blocks should take no more than half of all columns of grid.",
+//         location: {start: {column: 1, line: 1}, end: {column: 8, line: 32}}
+//       });
+//     });
+//
+//   });
+// });

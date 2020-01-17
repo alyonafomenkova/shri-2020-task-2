@@ -129,7 +129,7 @@ class WarningCheck {
         console.log("[START] Checking warning");
         this.canStart = false;
         this.inProgress = true;
-        traverse(parent);
+        //traverse(parent);
         this.inProgress = false;
         console.log("this.buttonPlaceholderArray from process: ", this.buttonPlaceholderArray);
         console.log("[FINISH] Checking warning");
@@ -239,8 +239,71 @@ class TitlesCheck {
   }
 }
 
+class GridCheck {
+
+  constructor() {
+    this.canStart = true;
+    this.inProgress = false;
+    this.location = null;
+    this.totalColumns = null;
+    this.marketingBlock = [];
+    this.marketingBlockName = ["commercial", "offer"];
+    this.notMarketingBlock = [];
+    this.notMarketingBlockName = ["payment", "warning", "product", "history", "cover", "collect", "articles", "subscribtion", "event"];
+  }
+
+  process(parent, node) {
+    const key = node.key.value;
+    const value = node.value.value;
+
+    if (this.canStart) {
+      if (key === "block" && value === "grid") {
+        console.log("[START] Checking grid");
+
+        const mods = parent.children.find((e) => { return e.key.value === "mods" });
+        this.location = parent.loc;
+        this.canStart = false;
+        this.inProgress = true;
+        traverse(parent);
+        this.inProgress = false;
+
+        if (mods) {
+          this.totalColumns = mods.value.children.find((e) => { return e.key.value === "m-columns" }).value.value;
+          //const content = parent.children.find((e) => { return e.key.value === "content" });
+        }
+
+
+        console.log("[FINISH] Checking grid");
+      }
+    }
+    if (this.marketingBlockName.includes(value)) {
+      console.log("value is marketing: ", value);
+      const content = parent.children.find((e) => { return e.key.value === "content" });
+      const elemMods = parent.children.find((e) => { return e.key.value === "elemMods" });
+      const col = elemMods.value.children.find((e) => { return e.key.value === "m-col" }).value.value;
+      console.log("marketing col: ", col);
+    }
+
+    if (this.notMarketingBlockName.includes(value)) {
+      console.log("value is other: ", value);
+      const content = parent.children.find((e) => { return e.key.value === "content" });
+      const elemMods = parent.children.find((e) => { return e.key.value === "elemMods" });
+      const col = elemMods.value.children.find((e) => { return e.key.value === "m-col" }).value.value;
+      console.log("other col: ", col);
+      this.notMarketingBlock.push({
+        name: value,
+      });
+    }
+  }
+
+  onComplete() {
+    console.log(`grid ONCOMLEATE`);
+  }
+}
+
 let warningCheck = new WarningCheck();
 let titlesCheck = new TitlesCheck();
+let gridCheck = new GridCheck();
 let depth = 0;
 
 function traverse(node) {
@@ -260,6 +323,7 @@ function traverse(node) {
     if (isLiteralPropertyType(type)) {
       warningCheck.process(parent, node, depth);
       titlesCheck.process(parent, node, depth);
+      //gridCheck.process(parent, node);
 
     } else if (isArrayPropertyType(type)) {
       const children = node.value.children;
@@ -337,18 +401,28 @@ const interestingCase = `{
 }`;
 
 const size = `[
-  {
-      "block": "text",
-      "mods": { "type": "h2" }
-  },
-  { 
-      "block": "text",
-      "elem": "word",
-      "content": {
-          "block": "text",
-          "mods": { "type": "h1" }
+{
+        "block": "warning",
+        "content": [
+          {
+            "block": "placeholder",
+            "mods": { "size": "m" }
+          },
+          {
+            "elem": "content",
+            "content": [
+                {
+                "block": "text",
+                "mods": { "size": "m" }
+                },
+                {
+                "block": "text",
+                "mods": { "size": "m" }
+                }
+            ]
+          }
+        ]
       }
-  }
-]`;
+     ]`;
 
 //lint(size); //
