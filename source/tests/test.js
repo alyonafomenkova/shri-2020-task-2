@@ -554,22 +554,26 @@ describe("<<<<<     CHECKING TITLES     >>>>>", () => {
 
     it("H2_3. Invalid position: H2 before H1 and nested.", () => {
       globalThis.reset();
-      const invalidH2 = `{
-        "block": "page",
-        "content": [
-          { "block": "section", "content": [
-            { "block": "text", "mods": { "type": "h2" } }
-          ]},
-          { "block": "text", "mods": { "type": "h1" } }
-        ]
-      }`;
+      const invalidH2 = `[
+        {
+        "block": "text",
+        "mods": { "type": "h2" }
+        },
+        { 
+        "block": "test",
+          "content": {
+            "block": "text",
+            "mods": { "type": "h1" }
+          }
+        }
+      ]`;
       const errors = globalThis.lint(invalidH2);
 
       expect(errors).to.have.lengthOf(1);
       expect(errors[0]).to.deep.equal({
         code: "TEXT.INVALID_H2_POSITION",
         error: "H2 should be after H1.",
-        location: {start: {column: 13, line: 5}, end: {column: 58, line: 5}}
+        location: {start: {column: 9, line: 2}, end: {column: 10, line: 5}}
       });
     });
 
@@ -622,6 +626,26 @@ describe("<<<<<     CHECKING TITLES     >>>>>", () => {
         location: {start: {column: 9, line: 2}, end: {column: 10, line: 5}}
       });
     });
+
+    it("H2_6. Valid position: H2 before H1 and H2 nested", () => {
+      globalThis.reset();
+      const validH2 = `[
+    { 
+        "block": "test",
+        "content": {
+            "block": "text",
+            "mods": { "type": "h2" }
+        }
+    },
+    {
+        "block": "text",
+        "mods": { "type": "h1" }
+    }
+]`;
+      const errors = globalThis.lint(validH2);
+
+      expect(errors).to.have.lengthOf(0);
+    });
   });
 
   describe("       Checking position of H3  ", () => {
@@ -660,23 +684,26 @@ describe("<<<<<     CHECKING TITLES     >>>>>", () => {
 
     it("H3_3. Invalid position: H3 before H2 and nested.", () => {
       globalThis.reset();
-      const invalidH3 = `{
-        "block": "page",
-        "content": [
-          { "block": "section", "content": [
-            { "block": "text", "mods": { "type": "h1" } },
-            { "block": "text", "mods": { "type": "h3" } }
-          ]},
-          { "block": "text", "mods": { "type": "h2" } }
-        ]
-      }`;
+      const invalidH3 = `[
+        {
+        "block": "text",
+        "mods": { "type": "h3" }
+        },
+        { 
+        "block": "test",
+        "content": {
+            "block": "text",
+            "mods": { "type": "h2" }
+        }
+        }
+      ]`;
       const errors = globalThis.lint(invalidH3);
 
       expect(errors).to.have.lengthOf(1);
       expect(errors[0]).to.deep.equal({
         code: "TEXT.INVALID_H3_POSITION",
         error: "H3 should be after H2.",
-        location: {start: {column: 13, line: 6}, end: {column: 58, line: 6}}
+        location: {start: {column: 9, line: 2}, end: {column: 10, line: 5}}
       });
     });
 

@@ -7,6 +7,7 @@ const INVALID_BUTTON_POSITION = "WARNING.INVALID_BUTTON_POSITION";
 const SEVERAL_H1 = "TEXT.SEVERAL_H1";
 const INVALID_H2_POSITION = "TEXT.INVALID_H2_POSITION";
 const INVALID_H3_POSITION = "TEXT.INVALID_H3_POSITION";
+const TOO_MUCH_MARKETING_BLOCKS = "GRID.TOO_MUCH_MARKETING_BLOCKS";
 
 const isObjectNode = (node) => node.type === "Object";
 const isPropertyNode = (node) => node.type === "Property";
@@ -129,7 +130,7 @@ class WarningCheck {
         console.log("[START] Checking warning");
         this.canStart = false;
         this.inProgress = true;
-        //traverse(parent);
+        traverse(parent);
         this.inProgress = false;
         console.log("this.buttonPlaceholderArray from process: ", this.buttonPlaceholderArray);
         console.log("[FINISH] Checking warning");
@@ -171,38 +172,30 @@ class TitlesCheck {
 
   constructor() {
     this.titles = [];
-    this.lastTextBlock = null;
   }
 
   process(parent, node, depth) {
     const key = node.key.value;
     const value = node.value.value;
 
-    if (key === "block" && value === "text") {
-      this.lastTextBlock = parent;
-    }
+    const textBlock = parent.children.find((e) => { return e.key.value === "block" && e.value.value === "text" });
+    if (!textBlock) return;
+    const mods = parent.children.find((e) => { return e.key.value === "mods"});
+    if (!mods) return;
+    const type = mods.value.children.find((e) => { return e.key.value === "type" });
+    if (!type) return;
+    const title = type.value.value;
 
-    if (key === "type" && (value === "h1" || value === "h2" || value === "h3")) {
-      if (this.lastTextBlock == null) {
-        console.error("Last text block is null");
-      } else {
-        const loc = this.lastTextBlock.loc;
-        console.log(`${value.toUpperCase()} inside TEXT BLOCK: ${loc.start.line}...${loc.end.line}`);
-
-        const contains = this.titles.find((e) => { return e.location === loc }) != null;
-
-        if (!contains) {
-          this.titles.push({
-            title: value,
-            location: loc,
-            depth: depth
-          });
-        }
-      }
+    if (title === "h1" || title === "h2" || title === "h3") {
+      this.titles.push({
+        title: title,
+        location: parent.loc
+      });
     }
   }
 
   onComplete() {
+    // parent.loc.end.column
     const arrayH1 = this.titles.filter(element => element.title === "h1");
 
     if (arrayH1.length === 0) {
@@ -215,26 +208,22 @@ class TitlesCheck {
 
     for (let i = 1; i < this.titles.length; i++) {
       const prevTitle = this.titles[i - 1].title;
-      const prevLocation = this.titles[i - 1].location;
-      const prevDepth = this.titles[i - 1].depth;
+      const prevLoc = this.titles[i - 1].location;
 
       const currTitle = this.titles[i].title;
-      const currLocation = this.titles[i].location;
-      const currDepth = this.titles[i].depth;
+      const currLoc = this.titles[i].location;
 
-      //if (prevDepth >= currDepth) {//
+      if (prevLoc.end.column <= currLoc.end.column) {
         if (prevTitle === "h2" && currTitle === "h1") {
-          if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
-            pushError(INVALID_H2_POSITION, "H2 should be after H1.", prevLocation);
-          }
+          pushError(INVALID_H2_POSITION, "H2 should be after H1.", prevLoc);
+
         } else if (prevTitle === "h3" && currTitle === "h2") {
-          if ((prevLocation.end.line < currLocation.start.line) || (prevLocation.end.line === currLocation.start.line && prevLocation.end.column < currLocation.start.column)) {
-            pushError(INVALID_H3_POSITION, "H3 should be after H2.", prevLocation);
-          }
+          pushError(INVALID_H3_POSITION, "H3 should be after H2.", prevLoc);
+
         } else if (prevTitle === "h3" && currTitle === "h1") {
-          pushError(INVALID_H3_POSITION, "H3 should be after H2.", prevLocation);
+          pushError(INVALID_H3_POSITION, "H3 should be after H1.", prevLoc);
         }
-      //}//
+      }
     }
   }
 }
@@ -400,29 +389,32 @@ const interestingCase = `{
   ]
 }`;
 
-const size = `[
-{
-        "block": "warning",
-        "content": [
-          {
-            "block": "placeholder",
-            "mods": { "size": "m" }
-          },
-          {
-            "elem": "content",
-            "content": [
-                {
-                "block": "text",
-                "mods": { "size": "m" }
-                },
-                {
-                "block": "text",
-                "mods": { "size": "m" }
-                }
-            ]
-          }
-        ]
-      }
-     ]`;
+const invalid = `[
+    {
+        "block": "text",
+        "mods": { "type": "h3" }
+    },
+    { 
+        "block": "test",
+        "content": {
+            "block": "text",
+            "mods": { "type": "h2" }
+        }
+    }
+]`;
 
-//lint(size); //
+const valid = `[
+    { 
+        "block": "test",
+        "content": {
+            "block": "text",
+            "mods": { "type": "h2" }
+        }
+    },
+    {
+        "block": "text",
+        "mods": { "type": "h1" }
+    }
+]`;
+
+//lint(invalid); //
