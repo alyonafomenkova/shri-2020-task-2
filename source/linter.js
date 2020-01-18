@@ -1,5 +1,4 @@
-//const jsonToAst = require("json-to-ast");
-import jsonToAst from 'json-to-ast';
+const jsonToAst = require("json-to-ast");
 
 const ERROR_TEXT_SIZES_SHOULD_BE_EQUAL = "WARNING.TEXT_SIZES_SHOULD_BE_EQUAL";
 const INVALID_BUTTON_SIZE = "WARNING.INVALID_BUTTON_SIZE";
@@ -337,7 +336,8 @@ function traverse(node) {
   //console.log(`<- ${depth}`);
 }
 
-function lint(jsonString) {
+//function lint(jsonString) {
+globalThis.lint = function(jsonString) {
   if (typeof jsonString !== 'string') return;
 
   const ast = jsonToAst(jsonString);
@@ -359,7 +359,6 @@ function reset() {
 
 
 //globalThis.lint = lint;
-global.lint = lint;
 //globalThis.reset = reset; //
 
 // valid ?
@@ -420,3 +419,4 @@ const valid = `[
 ]`;
 
 //lint(invalid); //
+module.exports = globalThis.lint;
