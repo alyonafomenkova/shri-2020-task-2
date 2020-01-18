@@ -340,10 +340,15 @@ function traverse(node) {
 globalThis.lint = function(jsonString) {
   if (typeof jsonString !== 'string') return;
 
-  const ast = jsonToAst(jsonString);
-  traverse(ast);
-  titlesCheck.onComplete();
-  warningCheck.onComplete();
+  try {
+    const ast = jsonToAst(jsonString);
+    traverse(ast);
+    titlesCheck.onComplete();
+    warningCheck.onComplete();
+  } catch {
+    throw new Error('Problem with ast.');
+  }
+
   console.log("errors: ", errors);
   return errors;
 };
