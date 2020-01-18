@@ -358,7 +358,8 @@ function reset() {
 }
 
 
-globalThis.lint = lint;
+//globalThis.lint = lint;
+global.lint = lint;
 //globalThis.reset = reset; //
 
 // valid ?
