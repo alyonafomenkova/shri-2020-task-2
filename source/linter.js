@@ -195,7 +195,6 @@ class TitlesCheck {
   }
 
   onComplete() {
-    // parent.loc.end.column
     const arrayH1 = this.titles.filter(element => element.title === "h1");
 
     if (arrayH1.length === 0) {
@@ -296,7 +295,7 @@ let gridCheck = new GridCheck();
 let depth = 0;
 
 function traverse(node) {
-  //console.log(`-> ${depth}`);
+  // console.log(`-> ${depth}`);
   depth++;
   const startLine = node.loc.start.line;
   const endLine = node.loc.end.line;
@@ -312,7 +311,7 @@ function traverse(node) {
     if (isLiteralPropertyType(type)) {
       warningCheck.process(parent, node, depth);
       titlesCheck.process(parent, node, depth);
-      //gridCheck.process(parent, node);
+      // gridCheck.process(parent, node);
 
     } else if (isArrayPropertyType(type)) {
       const children = node.value.children;
@@ -333,11 +332,10 @@ function traverse(node) {
     throw new Error(`Unknown node type: ${node.type} on lines ${startLine}..${endLine}`);
   }
   depth--;
-  //console.log(`<- ${depth}`);
+  // console.log(`<- ${depth}`);
 }
 
-//function lint(jsonString) {
-globalThis.lint = function(jsonString) {
+function lint(jsonString) {
   if (typeof jsonString !== 'string') return;
 
   try {
@@ -362,66 +360,8 @@ function reset() {
   depth = 0;
 }
 
+// globalThis.reset = reset;
 
-//globalThis.lint = lint;
-//globalThis.reset = reset; //
+globalThis.lint = lint;
 
-// valid ?
-
-const interestingCase = `{  
-"block": "warning",
-  "content": [ 
-      { "block": "text", "mods": { "size": "l" } }, 
-      { "block": "wrapper", 
-        "content": [ 
-          { "block": "text", "mods": { "size": "l" } } 
-        ] 
-      } 
-  ],
-  "mix": [
-    {  
-      "block": "warning",
-      "content":[
-        {
-        "block": "text",
-        "mods": { "type": "h1", "size": "s" }
-        },
-        {
-        "block": "text",
-        "mods": { "type": "h2", "size": "s" }
-        }
-      ]
-    }
-  ]
-}`;
-
-const invalid = `[
-    {
-        "block": "text",
-        "mods": { "type": "h3" }
-    },
-    { 
-        "block": "test",
-        "content": {
-            "block": "text",
-            "mods": { "type": "h2" }
-        }
-    }
-]`;
-
-const valid = `[
-    { 
-        "block": "test",
-        "content": {
-            "block": "text",
-            "mods": { "type": "h2" }
-        }
-    },
-    {
-        "block": "text",
-        "mods": { "type": "h1" }
-    }
-]`;
-
-//lint(invalid); //
 module.exports = globalThis.lint;
